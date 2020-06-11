@@ -52,7 +52,9 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
-    
+    const feedback = net.createConnection({ port: 6666, host: "192.168.88.41"}, () => {
+      this.log.info('Listening to controller feedback');
+    });
 
     // loop over the discovered devices and register each one if it has not already been registered
     for (const device of this.config.accessories) {
@@ -88,6 +90,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         // store a copy of the device object in the `accessory.context`
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
+        accessory.context.feedback = feedback;
 
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
