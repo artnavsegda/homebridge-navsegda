@@ -52,8 +52,22 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
-    const feedback = net.createConnection({ port: 6666, host: "192.168.88.41"}, () => {
-      this.log.info('Listening to controller feedback');
+    const feedback = new events.EventEmitter();
+    const client = net.createConnection({ port: 6666, host: "192.168.88.41"}, () => this.log.info('Listening to controller feedback'));
+    client.on('data', (data) => {
+      let joinType;
+      switch (data[0])
+      {
+        case 68:
+          joinType = "digital";
+        break;
+        case 65:
+          joinType = "analog";
+        break;
+      }
+      let join = data.toString("utf8",1,5);
+      let payloadValue = data.toString("utf8",6,11);
+      eventEmitter.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
     });
 
     // loop over the discovered devices and register each one if it has not already been registered
