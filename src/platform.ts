@@ -52,8 +52,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
-
-
+    
 
     // loop over the discovered devices and register each one if it has not already been registered
     for (const device of this.config.accessories) {
