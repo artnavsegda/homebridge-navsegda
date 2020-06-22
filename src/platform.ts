@@ -67,7 +67,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
       }
       let join = data.toString("utf8",1,5);
       let payloadValue = data.toString("utf8",6,11);
-      eventEmitter.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
+      feedback.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
     });
 
     // loop over the discovered devices and register each one if it has not already been registered
