@@ -52,7 +52,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
-    const feedback = new events.EventEmitter();
+    const eventFeedback = new events.EventEmitter();
     const client = net.createConnection({ port: 6666, host: "192.168.88.41"}, () => this.log.info('Listening to controller feedback'));
     client.on('data', (data) => {
       let joinType;
@@ -67,7 +67,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
       }
       let join = data.toString("utf8",1,5);
       let payloadValue = data.toString("utf8",6,11);
-      feedback.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
+      eventFeedback.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
     });
 
     // loop over the discovered devices and register each one if it has not already been registered
@@ -87,8 +87,9 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
 
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-        // existingAccessory.context.device = device;
-        // this.api.updatePlatformAccessories([existingAccessory]);
+        existingAccessory.context.device = device;
+        existingAccessory.context.eventFeedback = eventFeedback;
+        this.api.updatePlatformAccessories([existingAccessory]);
 
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
@@ -104,7 +105,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         // store a copy of the device object in the `accessory.context`
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
-        accessory.context.feedback = feedback;
+        accessory.context.eventFeedback = eventFeedback;
 
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`

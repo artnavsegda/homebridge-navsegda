@@ -69,6 +69,8 @@ export class ExamplePlatformAccessory {
 
       this.platform.log.debug('Pushed updated current Brightness state to HomeKit:', currentBrightness);
     }, 10000);
+
+    this.accessory.context.eventFeedback.on('update', (payload) => {this.platform.log.info('payload update ' +  payload)});
   }
 
   /**
