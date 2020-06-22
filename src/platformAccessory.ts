@@ -78,16 +78,17 @@ export class ExamplePlatformAccessory {
       if (payload.joinType == "digital" && payload.join == this.accessory.context.device.setOn)
       {
         this.platform.log.info(this.accessory.context.device.uniqueId + " has to be powered on");
-        //
         this.service.updateCharacteristic(this.platform.Characteristic.On, 1);
-        //this.service.updateCharacteristic(this.platform.Characteristic.Brightness, 100);
       }
       else if (payload.joinType == "digital" && payload.join == this.accessory.context.device.setOff)
       {
         this.platform.log.info(this.accessory.context.device.uniqueId + " has to be powered off");
-        //
         this.service.updateCharacteristic(this.platform.Characteristic.On, 0);
-        //this.service.updateCharacteristic(this.platform.Characteristic.Brightness, 0);
+      }
+      else if (payload.joinType == "analog" && payload.join == this.accessory.context.device.setBrightness)
+      {
+        this.platform.log.info(this.accessory.context.device.uniqueId + " set brightness to " + payload.payloadValue);
+        this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
       }
 
     });
