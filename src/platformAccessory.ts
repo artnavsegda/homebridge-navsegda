@@ -52,7 +52,8 @@ export class ExamplePlatformAccessory {
 
     // register handlers for the Brightness Characteristic
     this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-      .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
+      .on('set', this.setBrightness.bind(this))       // SET - bind to the 'setBrightness` method below
+      .on('get', this.getBrightness.bind(this));       // GET - bind to the 'getBrightness` method below
 
     // EXAMPLE ONLY
     // Example showing how to update the state of a Characteristic asynchronously instead
@@ -75,17 +76,12 @@ export class ExamplePlatformAccessory {
       this.platform.log.info(this.accessory.context.device.uniqueId + ' payload join ' +  payload.join);
       this.platform.log.info(this.accessory.context.device.uniqueId + ' payload value ' +  payload.payloadValue);
 
-      if (payload.joinType == "digital" && payload.join == this.accessory.context.device.setOn)
+      if (payload.joinType == "digital" && payload.join == this.accessory.context.device.getOn)
       {
-        this.platform.log.info(this.accessory.context.device.uniqueId + " has to be powered on");
-        this.service.updateCharacteristic(this.platform.Characteristic.On, 1);
+        this.platform.log.info(this.accessory.context.device.uniqueId + " set value to " + payload.payloadValue);
+        this.service.updateCharacteristic(this.platform.Characteristic.On, payload.payloadValue);
       }
-      else if (payload.joinType == "digital" && payload.join == this.accessory.context.device.setOff)
-      {
-        this.platform.log.info(this.accessory.context.device.uniqueId + " has to be powered off");
-        this.service.updateCharacteristic(this.platform.Characteristic.On, 0);
-      }
-      else if (payload.joinType == "analog" && payload.join == this.accessory.context.device.setBrightness)
+      else if (payload.joinType == "analog" && payload.join == this.accessory.context.device.getBrightness)
       {
         this.platform.log.info(this.accessory.context.device.uniqueId + " set brightness to " + payload.payloadValue);
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
@@ -93,10 +89,11 @@ export class ExamplePlatformAccessory {
 
     });
 
-    this.platform.log.debug(this.accessory.context.device.uniqueId + " setOn join " + this.accessory.context.device.setOn);
-    this.platform.log.debug(this.accessory.context.device.uniqueId + " getOn join " + this.accessory.context.device.getOn);
-    this.platform.log.debug(this.accessory.context.device.uniqueId + " setOff join " + this.accessory.context.device.setOff);
-    this.platform.log.debug(this.accessory.context.device.uniqueId + " setBrightness join " + this.accessory.context.device.setBrightness);
+    this.platform.log.debug(this.accessory.context.device.displayName + " setOn join " + this.accessory.context.device.setOn);
+    this.platform.log.debug(this.accessory.context.device.displayName + " getOn join " + this.accessory.context.device.getOn);
+    this.platform.log.debug(this.accessory.context.device.displayName + " setOff join " + this.accessory.context.device.setOff);
+    this.platform.log.debug(this.accessory.context.device.displayName + " setBrightness join " + this.accessory.context.device.setBrightness);
+    this.platform.log.debug(this.accessory.context.device.displayName + " getBrightness join " + this.accessory.context.device.setBrightness);
 
   }
 
@@ -212,6 +209,47 @@ export class ExamplePlatformAccessory {
 
     // you must call the callback function
     callback(null);
+  }
+
+  /**
+   * Handle the "GET" requests from HomeKit
+   * These are sent when HomeKit wants to know the current state of the accessory, for example, changing the Brightness
+   *
+   */
+  getBrightness(callback: CharacteristicGetCallback) {
+
+    // implement your own code to check if the device is on
+    //const isOn = this.exampleStates.On;
+
+    function aread(join, returnFn)
+    {
+      function pad(num, size){     return ('000000000' + num).substr(-size); }
+      http.request({
+        host: '192.168.88.41',
+        port: '7001',
+        path: '/R' + pad(join, 4)
+      }, (response) => {
+        var str = '';
+        response.on('data', (chunk) => str += chunk);
+        response.on('end', () => {
+          console.log("read:" + str);
+          returnFn(str);
+        });
+      }).end();
+    }
+
+    aread(this.accessory.context.device.getOn, (value) => {
+      const currentBrightness = value;
+      this.platform.log.debug('Get Characteristic Brightness ->', currentBrightness);
+      callback(null, currentBrightness);
+    });
+
+    //this.platform.log.debug('Get Characteristic On ->', isOn);
+
+    // you must call the callback function
+    // the first argument should be null if there were no errors
+    // the second argument should be the value to return
+    //callback(null, isOn);
   }
 
 }
