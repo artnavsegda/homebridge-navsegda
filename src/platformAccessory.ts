@@ -169,6 +169,22 @@ export class ExamplePlatformAccessory {
     // implement your own code to set the brightness
     this.exampleStates.Brightness = value as number;
 
+    function awrite(join, value)
+    {
+      function pad(num, size){     return ('000000000' + num).substr(-size); }
+      http.request({
+        host: '192.168.88.41',
+        port: '7001',
+        path: '/A' + pad(join, 4) + 'V' + pad(value, 5)
+      }, (response) => {
+        var str = '';
+        response.on('data', (chunk) => str += chunk);
+        response.on('end', () => console.log(str));
+      }).end();
+    }
+
+    awrite(this.accessory.context.device.setBrightness, value);
+
     this.platform.log.debug('Set Characteristic Brightness -> ', value);
 
     // you must call the callback function
