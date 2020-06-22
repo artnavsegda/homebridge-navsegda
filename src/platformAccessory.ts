@@ -67,6 +67,32 @@ export class ExamplePlatformAccessory {
           this.platform.log.debug(this.accessory.context.device.displayName + " getBrightness join " + this.accessory.context.device.setBrightness);
         }
       }
+      if (this.accessory.context.device.setHue)
+      {
+        // register handlers for the Hue Characteristic
+        this.service.getCharacteristic(this.platform.Characteristic.Hue)
+          .on('set', this.setHue.bind(this));       // SET - bind to the 'setHue` method below
+        this.platform.log.debug(this.accessory.context.device.displayName + " setHue join " + this.accessory.context.device.setHue);
+        if (this.accessory.context.device.getHue)
+        {
+          this.service.getCharacteristic(this.platform.Characteristic.Hue)
+            .on('get', this.getHue.bind(this));       // GET - bind to the 'getHue` method below
+          this.platform.log.debug(this.accessory.context.device.displayName + " getHue join " + this.accessory.context.device.getHue);
+        }
+      }
+      if (this.accessory.context.device.setSaturation)
+      {
+        // register handlers for the Saturation Characteristic
+        this.service.getCharacteristic(this.platform.Characteristic.Saturation)
+          .on('set', this.setSaturation.bind(this));       // SET - bind to the 'setSaturation` method below
+        this.platform.log.debug(this.accessory.context.device.displayName + " setSaturation join " + this.accessory.context.device.setSaturation);
+        if (this.accessory.context.device.getSaturation)
+        {
+          this.service.getCharacteristic(this.platform.Characteristic.Saturation)
+            .on('get', this.getSaturation.bind(this));       // GET - bind to the 'getSaturation` method below
+          this.platform.log.debug(this.accessory.context.device.displayName + " getSaturation join " + this.accessory.context.device.getSaturation);
+        }
+      }
     }
     else if (this.accessory.context.device.type == "WindowCovering")
     {
@@ -232,21 +258,6 @@ export class ExamplePlatformAccessory {
     }).end();
   }
 
-  /**
-   * Handle "SET" requests from HomeKit
-   * These are sent when the user changes the state of an accessory, for example, changing the Brightness
-   */
-  setBrightness(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-
-    // implement your own code to set the brightness
-    this.exampleStates.Brightness = value as number;
-    this.analogWrite(this.accessory.context.device.setBrightness, value);
-    this.platform.log.debug('Set Characteristic Brightness -> ', value);
-
-    // you must call the callback function
-    callback(null);
-  }
-
   analogRead(join, returnFn)
   {
     function pad(num, size){     return ('000000000' + num).substr(-size); }
@@ -265,6 +276,21 @@ export class ExamplePlatformAccessory {
   }
 
   /**
+   * Handle "SET" requests from HomeKit
+   * These are sent when the user changes the state of an accessory, for example, changing the Brightness
+   */
+  setBrightness(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+
+    // implement your own code to set the brightness
+    this.exampleStates.Brightness = value as number;
+    this.analogWrite(this.accessory.context.device.setBrightness, value);
+    this.platform.log.debug('Set Characteristic Brightness -> ', value);
+
+    // you must call the callback function
+    callback(null);
+  }
+
+  /**
    * Handle the "GET" requests from HomeKit
    * These are sent when HomeKit wants to know the current state of the accessory, for example, changing the Brightness
    *
@@ -275,6 +301,54 @@ export class ExamplePlatformAccessory {
       const currentBrightness = value;
       this.platform.log.debug('Get Characteristic Brightness ->', currentBrightness);
       callback(null, currentBrightness);
+    });
+  }
+
+  /**
+   * Handle "SET" requests from HomeKit
+   * These are sent when the user changes the state of an accessory, for example, changing the Hue
+   */
+  setHue(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+    this.analogWrite(this.accessory.context.device.setHue, value);
+    this.platform.log.debug('Set Characteristic Hue -> ', value);
+    callback(null);
+  }
+
+  /**
+   * Handle the "GET" requests from HomeKit
+   * These are sent when HomeKit wants to know the current state of the accessory, for example, changing the Hue
+   *
+   */
+  getHue(callback: CharacteristicGetCallback) {
+    this.platform.log.debug('Triggered GET Hue');
+    this.analogRead(this.accessory.context.device.getHue, (value) => {
+      const currentHue = value;
+      this.platform.log.debug('Get Characteristic Hue ->', currentHue);
+      callback(null, currentHue);
+    });
+  }
+
+  /**
+   * Handle "SET" requests from HomeKit
+   * These are sent when the user changes the state of an accessory, for example, changing the Saturation
+   */
+  setSaturation(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+    this.analogWrite(this.accessory.context.device.setSaturation, value);
+    this.platform.log.debug('Set Characteristic Saturation -> ', value);
+    callback(null);
+  }
+
+  /**
+   * Handle the "GET" requests from HomeKit
+   * These are sent when HomeKit wants to know the current state of the accessory, for example, changing the Saturation
+   *
+   */
+  getSaturation(callback: CharacteristicGetCallback) {
+    this.platform.log.debug('Triggered GET Saturation');
+    this.analogRead(this.accessory.context.device.getSaturation, (value) => {
+      const currentSaturation = value;
+      this.platform.log.debug('Get Characteristic Saturation ->', currentSaturation);
+      callback(null, currentSaturation);
     });
   }
 
