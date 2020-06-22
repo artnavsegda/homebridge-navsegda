@@ -51,15 +51,21 @@ export class ExamplePlatformAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.On)
         .on('set', this.setOn.bind(this))                // SET - bind to the `setOn` method below
         .on('get', this.getOn.bind(this));               // GET - bind to the `getOn` method below
-
+      this.platform.log.debug(this.accessory.context.device.displayName + " setOn join " + this.accessory.context.device.setOn);
+      this.platform.log.debug(this.accessory.context.device.displayName + " getOn join " + this.accessory.context.device.getOn);
+      this.platform.log.debug(this.accessory.context.device.displayName + " setOff join " + this.accessory.context.device.setOff);
       if (this.accessory.context.device.setBrightness)
       {
         // register handlers for the Brightness Characteristic
         this.service.getCharacteristic(this.platform.Characteristic.Brightness)
           .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
+        this.platform.log.debug(this.accessory.context.device.displayName + " setBrightness join " + this.accessory.context.device.setBrightness);
         if (this.accessory.context.device.getBrightness)
+        {
           this.service.getCharacteristic(this.platform.Characteristic.Brightness)
             .on('get', this.getBrightness.bind(this));       // GET - bind to the 'getBrightness` method below
+          this.platform.log.debug(this.accessory.context.device.displayName + " getBrightness join " + this.accessory.context.device.setBrightness);
+        }
       }
     }
     else if (this.accessory.context.device.type == "WindowCovering")
@@ -80,15 +86,19 @@ export class ExamplePlatformAccessory {
       // see https://developers.homebridge.io/#/service/Lightbulb
 
       // create handlers for required characteristics
-      this.service.getCharacteristic(this.Characteristic.CurrentPosition)
+      this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition)
         .on('get', this.handleCurrentPositionGet.bind(this));
 
-      this.service.getCharacteristic(this.Characteristic.TargetPosition)
+      this.service.getCharacteristic(this.platform.Characteristic.TargetPosition)
         .on('get', this.handleTargetPositionGet.bind(this))
         .on('set', this.handleTargetPositionSet.bind(this));
 
-      this.service.getCharacteristic(this.Characteristic.PositionState)
+      this.service.getCharacteristic(this.platform.Characteristic.PositionState)
         .on('get', this.handlePositionStateGet.bind(this));
+    }
+    else
+    {
+      this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
     }
 
     // EXAMPLE ONLY
@@ -123,13 +133,6 @@ export class ExamplePlatformAccessory {
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
       }
     });
-
-    this.platform.log.debug(this.accessory.context.device.displayName + " setOn join " + this.accessory.context.device.setOn);
-    this.platform.log.debug(this.accessory.context.device.displayName + " getOn join " + this.accessory.context.device.getOn);
-    this.platform.log.debug(this.accessory.context.device.displayName + " setOff join " + this.accessory.context.device.setOff);
-    this.platform.log.debug(this.accessory.context.device.displayName + " setBrightness join " + this.accessory.context.device.setBrightness);
-    this.platform.log.debug(this.accessory.context.device.displayName + " getBrightness join " + this.accessory.context.device.setBrightness);
-
   }
 
   /**
@@ -201,7 +204,7 @@ export class ExamplePlatformAccessory {
     // implement your own code to check if the device is on
     //const isOn = this.exampleStates.On;
 
-    digitalRead(this.accessory.context.device.getOn, (value) => {
+    this.digitalRead(this.accessory.context.device.getOn, (value) => {
       const isOn = value;
       this.platform.log.debug('Get Characteristic On ->', isOn);
       callback(null, isOn);
@@ -267,7 +270,7 @@ export class ExamplePlatformAccessory {
    *
    */
   getBrightness(callback: CharacteristicGetCallback) {
-    this.log.debug('Triggered GET Brightness');
+    this.platform.log.debug('Triggered GET Brightness');
     this.analogRead(this.accessory.context.device.getBrightness, (value) => {
       const currentBrightness = value;
       this.platform.log.debug('Get Characteristic Brightness ->', currentBrightness);
@@ -279,8 +282,8 @@ export class ExamplePlatformAccessory {
    * Handle requests to get the current value of the "Current Position" characteristic
    */
   handleCurrentPositionGet(callback) {
-    this.log.debug('Triggered GET CurrentPosition');
-    analogRead(this.accessory.context.device.getCurrentPosition, (value) => {
+    this.platform.log.debug('Triggered GET CurrentPosition');
+    this.analogRead(this.accessory.context.device.getCurrentPosition, (value) => {
       const CurrentPosition = value;
       this.platform.log.debug('Get Characteristic CurrentPosition ->', CurrentPosition);
       callback(null, CurrentPosition);
@@ -292,8 +295,8 @@ export class ExamplePlatformAccessory {
    * Handle requests to get the current value of the "Target Position" characteristic
    */
   handleTargetPositionGet(callback) {
-    this.log.debug('Triggered GET TargetPosition');
-    analogRead(this.accessory.context.device.setTargetPosition, (value) => {
+    this.platform.log.debug('Triggered GET TargetPosition');
+    this.analogRead(this.accessory.context.device.setTargetPosition, (value) => {
       const TargetPosition = value;
       this.platform.log.debug('Get Characteristic TargetPosition ->', TargetPosition);
       callback(null, TargetPosition);
@@ -304,7 +307,7 @@ export class ExamplePlatformAccessory {
    * Handle requests to set the "Target Position" characteristic
    */
   handleTargetPositionSet(value, callback) {
-    this.log.debug('Triggered SET TargetPosition:' + value);
+    this.platform.log.debug('Triggered SET TargetPosition:' + value);
     this.analogWrite(this.accessory.context.device.setTargetPosition, value);
     callback(null);
   }
@@ -313,21 +316,21 @@ export class ExamplePlatformAccessory {
    * Handle requests to get the current value of the "Position State" characteristic
    */
   handlePositionStateGet(callback) {
-    this.log.debug('Triggered GET PositionState');
+    this.platform.log.debug('Triggered GET PositionState');
 
-    digitalRead(this.accessory.context.device.getGoingMin, (value) => {
+    this.digitalRead(this.accessory.context.device.getGoingMin, (value) => {
       const isOn = value;
       this.platform.log.debug('Position getGoingMin ->', isOn);
       if (isOn)
         callback(null, 0);
     });
-    digitalRead(this.accessory.context.device.getGoingMax, (value) => {
+    this.digitalRead(this.accessory.context.device.getGoingMax, (value) => {
       const isOn = value;
       this.platform.log.debug('Position getGoingMax ->', isOn);
       if (isOn)
         callback(null, 1);
     });
-    digitalRead(this.accessory.context.device.getStopped, (value) => {
+    this.digitalRead(this.accessory.context.device.getStopped, (value) => {
       const isOn = value;
       this.platform.log.debug('Position getStopped ->', isOn);
       if (isOn)
