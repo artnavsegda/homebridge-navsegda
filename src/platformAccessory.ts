@@ -150,14 +150,37 @@ export class ExamplePlatformAccessory {
   getOn(callback: CharacteristicGetCallback) {
 
     // implement your own code to check if the device is on
-    const isOn = this.exampleStates.On;
+    //const isOn = this.exampleStates.On;
 
-    this.platform.log.debug('Get Characteristic On ->', isOn);
+    function dread(join, returnFn)
+    {
+      function pad(num, size){     return ('000000000' + num).substr(-size); }
+      http.request({
+        host: '192.168.88.41',
+        port: '7001',
+        path: '/G' + pad(join, 4)
+      }, (response) => {
+        var str = '';
+        response.on('data', (chunk) => str += chunk);
+        response.on('end', () => {
+          console.log("read:" + str);
+          returnFn(str);
+        });
+      }).end();
+    }
+
+    dread(this.accessory.context.device.getOn, (value) => {
+      const isOn = value;
+      this.platform.log.debug('Get Characteristic On ->', isOn);
+      callback(null, isOn);
+    });
+
+    //this.platform.log.debug('Get Characteristic On ->', isOn);
 
     // you must call the callback function
     // the first argument should be null if there were no errors
     // the second argument should be the value to return
-    callback(null, isOn);
+    //callback(null, isOn);
   }
 
   /**
