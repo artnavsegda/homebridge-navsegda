@@ -94,6 +94,7 @@ export class ExamplePlatformAccessory {
     });
 
     this.platform.log.debug(this.accessory.context.device.uniqueId + " setOn join " + this.accessory.context.device.setOn);
+    this.platform.log.debug(this.accessory.context.device.uniqueId + " getOn join " + this.accessory.context.device.getOn);
     this.platform.log.debug(this.accessory.context.device.uniqueId + " setOff join " + this.accessory.context.device.setOff);
     this.platform.log.debug(this.accessory.context.device.uniqueId + " setBrightness join " + this.accessory.context.device.setBrightness);
 
@@ -107,6 +108,25 @@ export class ExamplePlatformAccessory {
 
     // implement your own code to turn your device on/off
     this.exampleStates.On = value as boolean;
+
+    function dwrite(join)
+    {
+      function pad(num, size){     return ('000000000' + num).substr(-size); }
+      http.request({
+        host: '192.168.88.41',
+        port: '7001',
+        path: '/D' + pad(join, 4)
+      }, (response) => {
+        var str = '';
+        response.on('data', (chunk) => str += chunk);
+        response.on('end', () => console.log(str));
+      }).end();
+    }
+
+    if (value as boolean)
+      dwrite(this.accessory.context.device.setOn);
+    else
+      dwrite(this.accessory.context.device.setOff);
 
     this.platform.log.debug('Set Characteristic On ->', value);
 
