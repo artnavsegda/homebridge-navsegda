@@ -304,7 +304,7 @@ export class ExamplePlatformAccessory {
    * Handle requests to set the "Target Position" characteristic
    */
   handleTargetPositionSet(value, callback) {
-    this.log.debug('Triggered SET TargetPosition:' value);
+    this.log.debug('Triggered SET TargetPosition:' + value);
     this.analogWrite(this.accessory.context.device.setTargetPosition, value);
     callback(null);
   }
