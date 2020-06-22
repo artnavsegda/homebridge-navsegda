@@ -30,34 +30,65 @@ export class ExamplePlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial');
 
-    // get the LightBulb service if it exists, otherwise create a new LightBulb service
-    // you can create multiple services for each accessory
-    this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
-
-    // To avoid "Cannot add a Service with the same UUID another Service without also defining a unique 'subtype' property." error,
-    // when creating multiple services of the same type, you need to use the following syntax to specify a name and subtype id:
-    // this.accessory.getService('NAME') ?? this.accessory.addService(this.platform.Service.Lightbulb, 'NAME', 'USER_DEFINED_SUBTYPE');
-
-    // set the service name, this is what is displayed as the default name on the Home app
-    // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.exampleDisplayName);
-
-    // each service must implement at-minimum the "required characteristics" for the given service type
-    // see https://developers.homebridge.io/#/service/Lightbulb
-
-    // register handlers for the On/Off Characteristic
-    this.service.getCharacteristic(this.platform.Characteristic.On)
-      .on('set', this.setOn.bind(this))                // SET - bind to the `setOn` method below
-      .on('get', this.getOn.bind(this));               // GET - bind to the `getOn` method below
-
-    if (this.accessory.context.device.setBrightness)
+    if (this.accessory.context.device.type == "Lightbulb")
     {
-      // register handlers for the Brightness Characteristic
-      this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-        .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
-      if (this.accessory.context.device.getBrightness)
+      // get the LightBulb service if it exists, otherwise create a new LightBulb service
+      // you can create multiple services for each accessory
+      this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
+
+      // To avoid "Cannot add a Service with the same UUID another Service without also defining a unique 'subtype' property." error,
+      // when creating multiple services of the same type, you need to use the following syntax to specify a name and subtype id:
+      // this.accessory.getService('NAME') ?? this.accessory.addService(this.platform.Service.Lightbulb, 'NAME', 'USER_DEFINED_SUBTYPE');
+
+      // set the service name, this is what is displayed as the default name on the Home app
+      // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
+      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+
+      // each service must implement at-minimum the "required characteristics" for the given service type
+      // see https://developers.homebridge.io/#/service/Lightbulb
+
+      // register handlers for the On/Off Characteristic
+      this.service.getCharacteristic(this.platform.Characteristic.On)
+        .on('set', this.setOn.bind(this))                // SET - bind to the `setOn` method below
+        .on('get', this.getOn.bind(this));               // GET - bind to the `getOn` method below
+
+      if (this.accessory.context.device.setBrightness)
+      {
+        // register handlers for the Brightness Characteristic
         this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-          .on('get', this.getBrightness.bind(this));       // GET - bind to the 'getBrightness` method below
+          .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
+        if (this.accessory.context.device.getBrightness)
+          this.service.getCharacteristic(this.platform.Characteristic.Brightness)
+            .on('get', this.getBrightness.bind(this));       // GET - bind to the 'getBrightness` method below
+      }
+    }
+    else if (this.accessory.context.device.type == "WindowCovering")
+    {
+      // get the LightBulb service if it exists, otherwise create a new LightBulb service
+      // you can create multiple services for each accessory
+      this.service = this.accessory.getService(this.platform.Service.WindowCovering) || this.accessory.addService(this.platform.Service.WindowCovering);
+
+      // To avoid "Cannot add a Service with the same UUID another Service without also defining a unique 'subtype' property." error,
+      // when creating multiple services of the same type, you need to use the following syntax to specify a name and subtype id:
+      // this.accessory.getService('NAME') ?? this.accessory.addService(this.platform.Service.Lightbulb, 'NAME', 'USER_DEFINED_SUBTYPE');
+
+      // set the service name, this is what is displayed as the default name on the Home app
+      // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
+      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+
+      // each service must implement at-minimum the "required characteristics" for the given service type
+      // see https://developers.homebridge.io/#/service/Lightbulb
+
+      // create handlers for required characteristics
+      this.service.getCharacteristic(this.Characteristic.CurrentPosition)
+        .on('get', this.handleCurrentPositionGet.bind(this));
+
+      this.service.getCharacteristic(this.Characteristic.TargetPosition)
+        .on('get', this.handleTargetPositionGet.bind(this))
+        .on('set', this.handleTargetPositionSet.bind(this));
+
+      this.service.getCharacteristic(this.Characteristic.PositionState)
+        .on('get', this.handlePositionStateGet.bind(this));
     }
 
     // EXAMPLE ONLY
@@ -135,6 +166,23 @@ export class ExamplePlatformAccessory {
     callback(null);
   }
 
+  digitalRead(join, returnFn)
+  {
+    function pad(num, size){     return ('000000000' + num).substr(-size); }
+    http.request({
+      host: '192.168.88.41',
+      port: '7001',
+      path: '/G' + pad(join, 4)
+    }, (response) => {
+      var str = '';
+      response.on('data', (chunk) => str += chunk);
+      response.on('end', () => {
+        console.log("read:" + str);
+        returnFn(str);
+      });
+    }).end();
+  }
+
   /**
    * Handle the "GET" requests from HomeKit
    * These are sent when HomeKit wants to know the current state of the accessory, for example, checking if a Light bulb is on.
@@ -153,24 +201,7 @@ export class ExamplePlatformAccessory {
     // implement your own code to check if the device is on
     //const isOn = this.exampleStates.On;
 
-    function dread(join, returnFn)
-    {
-      function pad(num, size){     return ('000000000' + num).substr(-size); }
-      http.request({
-        host: '192.168.88.41',
-        port: '7001',
-        path: '/G' + pad(join, 4)
-      }, (response) => {
-        var str = '';
-        response.on('data', (chunk) => str += chunk);
-        response.on('end', () => {
-          console.log("read:" + str);
-          returnFn(str);
-        });
-      }).end();
-    }
-
-    dread(this.accessory.context.device.getOn, (value) => {
+    digitalRead(this.accessory.context.device.getOn, (value) => {
       const isOn = value;
       this.platform.log.debug('Get Characteristic On ->', isOn);
       callback(null, isOn);
@@ -184,6 +215,20 @@ export class ExamplePlatformAccessory {
     //callback(null, isOn);
   }
 
+  analogWrite(join, value)
+  {
+    function pad(num, size){     return ('000000000' + num).substr(-size); }
+    http.request({
+      host: '192.168.88.41',
+      port: '7001',
+      path: '/A' + pad(join, 4) + 'V' + pad(value, 5)
+    }, (response) => {
+      var str = '';
+      response.on('data', (chunk) => str += chunk);
+      response.on('end', () => console.log(str));
+    }).end();
+  }
+
   /**
    * Handle "SET" requests from HomeKit
    * These are sent when the user changes the state of an accessory, for example, changing the Brightness
@@ -192,27 +237,28 @@ export class ExamplePlatformAccessory {
 
     // implement your own code to set the brightness
     this.exampleStates.Brightness = value as number;
-
-    function awrite(join, value)
-    {
-      function pad(num, size){     return ('000000000' + num).substr(-size); }
-      http.request({
-        host: '192.168.88.41',
-        port: '7001',
-        path: '/A' + pad(join, 4) + 'V' + pad(value, 5)
-      }, (response) => {
-        var str = '';
-        response.on('data', (chunk) => str += chunk);
-        response.on('end', () => console.log(str));
-      }).end();
-    }
-
-    awrite(this.accessory.context.device.setBrightness, value);
-
+    this.analogWrite(this.accessory.context.device.setBrightness, value);
     this.platform.log.debug('Set Characteristic Brightness -> ', value);
 
     // you must call the callback function
     callback(null);
+  }
+
+  analogRead(join, returnFn)
+  {
+    function pad(num, size){     return ('000000000' + num).substr(-size); }
+    http.request({
+      host: '192.168.88.41',
+      port: '7001',
+      path: '/R' + pad(join, 4)
+    }, (response) => {
+      var str = '';
+      response.on('data', (chunk) => str += chunk);
+      response.on('end', () => {
+        console.log("read:" + str);
+        returnFn(str);
+      });
+    }).end();
   }
 
   /**
@@ -221,39 +267,71 @@ export class ExamplePlatformAccessory {
    *
    */
   getBrightness(callback: CharacteristicGetCallback) {
-
-    // implement your own code to check if the device is on
-    //const isOn = this.exampleStates.On;
-
-    function aread(join, returnFn)
-    {
-      function pad(num, size){     return ('000000000' + num).substr(-size); }
-      http.request({
-        host: '192.168.88.41',
-        port: '7001',
-        path: '/R' + pad(join, 4)
-      }, (response) => {
-        var str = '';
-        response.on('data', (chunk) => str += chunk);
-        response.on('end', () => {
-          console.log("read:" + str);
-          returnFn(str);
-        });
-      }).end();
-    }
-
-    aread(this.accessory.context.device.getBrightness, (value) => {
+    this.log.debug('Triggered GET Brightness');
+    this.analogRead(this.accessory.context.device.getBrightness, (value) => {
       const currentBrightness = value;
       this.platform.log.debug('Get Characteristic Brightness ->', currentBrightness);
       callback(null, currentBrightness);
     });
-
-    //this.platform.log.debug('Get Characteristic On ->', isOn);
-
-    // you must call the callback function
-    // the first argument should be null if there were no errors
-    // the second argument should be the value to return
-    //callback(null, isOn);
   }
 
+  /**
+   * Handle requests to get the current value of the "Current Position" characteristic
+   */
+  handleCurrentPositionGet(callback) {
+    this.log.debug('Triggered GET CurrentPosition');
+    analogRead(this.accessory.context.device.getCurrentPosition, (value) => {
+      const CurrentPosition = value;
+      this.platform.log.debug('Get Characteristic CurrentPosition ->', CurrentPosition);
+      callback(null, CurrentPosition);
+    });
+  }
+
+
+  /**
+   * Handle requests to get the current value of the "Target Position" characteristic
+   */
+  handleTargetPositionGet(callback) {
+    this.log.debug('Triggered GET TargetPosition');
+    analogRead(this.accessory.context.device.setTargetPosition, (value) => {
+      const TargetPosition = value;
+      this.platform.log.debug('Get Characteristic TargetPosition ->', TargetPosition);
+      callback(null, TargetPosition);
+    });
+  }
+
+  /**
+   * Handle requests to set the "Target Position" characteristic
+   */
+  handleTargetPositionSet(value, callback) {
+    this.log.debug('Triggered SET TargetPosition:' value);
+    this.analogWrite(this.accessory.context.device.setTargetPosition, value);
+    callback(null);
+  }
+
+  /**
+   * Handle requests to get the current value of the "Position State" characteristic
+   */
+  handlePositionStateGet(callback) {
+    this.log.debug('Triggered GET PositionState');
+
+    digitalRead(this.accessory.context.device.getGoingMin, (value) => {
+      const isOn = value;
+      this.platform.log.debug('Position getGoingMin ->', isOn);
+      if (isOn)
+        callback(null, 0);
+    });
+    digitalRead(this.accessory.context.device.getGoingMax, (value) => {
+      const isOn = value;
+      this.platform.log.debug('Position getGoingMax ->', isOn);
+      if (isOn)
+        callback(null, 1);
+    });
+    digitalRead(this.accessory.context.device.getStopped, (value) => {
+      const isOn = value;
+      this.platform.log.debug('Position getStopped ->', isOn);
+      if (isOn)
+        callback(null, 2);
+    });
+  }
 }
