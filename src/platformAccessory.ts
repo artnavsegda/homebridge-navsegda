@@ -60,15 +60,15 @@ export class ExamplePlatformAccessory {
     //
     // Here we change update the brightness to a random value every 5 seconds using
     // the `updateCharacteristic` method.
-    setInterval(() => {
-      // assign the current brightness a random value between 0 and 100
-      const currentBrightness = Math.floor(Math.random() * 100);
-
-      // push the new value to HomeKit
-      this.service.updateCharacteristic(this.platform.Characteristic.Brightness, currentBrightness);
-
-      this.platform.log.debug('Pushed updated current Brightness state to HomeKit:', currentBrightness);
-    }, 10000);
+    // setInterval(() => {
+    //   // assign the current brightness a random value between 0 and 100
+    //   const currentBrightness = Math.floor(Math.random() * 100);
+    //
+    //   // push the new value to HomeKit
+    //   this.service.updateCharacteristic(this.platform.Characteristic.Brightness, currentBrightness);
+    //
+    //   this.platform.log.debug('Pushed updated current Brightness state to HomeKit:', currentBrightness);
+    // }, 10000);
 
     this.accessory.context.eventFeedback.on('update', (payload) => {
       this.platform.log.info(this.accessory.context.device.uniqueId + ' payload update ' +  payload.joinType);
@@ -93,8 +93,9 @@ export class ExamplePlatformAccessory {
 
     });
 
-    this.platform.log.debug("setOn join " + this.accessory.context.device.setOn);
-    this.platform.log.debug("setOff join " + this.accessory.context.device.setOff);
+    this.platform.log.debug(this.accessory.context.device.uniqueId + " setOn join " + this.accessory.context.device.setOn);
+    this.platform.log.debug(this.accessory.context.device.uniqueId + " setOff join " + this.accessory.context.device.setOff);
+    this.platform.log.debug(this.accessory.context.device.uniqueId + " setBrightness join " + this.accessory.context.device.setBrightness);
 
   }
 
