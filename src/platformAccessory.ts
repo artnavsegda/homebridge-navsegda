@@ -393,21 +393,18 @@ export class ExamplePlatformAccessory {
     this.platform.log.debug('Triggered GET PositionState');
 
     this.digitalRead(this.accessory.context.device.getGoingMin, (value) => {
-      const isOn = value;
-      this.platform.log.debug('Position getGoingMin ->', isOn);
-      if (isOn)
+      this.platform.log.debug('Position getGoingMin ->', value);
+      if (value)
         callback(null, 0);
     });
     this.digitalRead(this.accessory.context.device.getGoingMax, (value) => {
-      const isOn = value;
-      this.platform.log.debug('Position getGoingMax ->', isOn);
-      if (isOn)
+      this.platform.log.debug('Position getGoingMax ->', value);
+      if (value)
         callback(null, 1);
     });
     this.digitalRead(this.accessory.context.device.getStopped, (value) => {
-      const isOn = value;
-      this.platform.log.debug('Position getStopped ->', isOn);
-      if (isOn)
+      this.platform.log.debug('Position getStopped ->', value);
+      if (value)
         callback(null, 2);
     });
   }
