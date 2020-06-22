@@ -1,6 +1,6 @@
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
-
 import { ExampleHomebridgePlatform } from './platform';
+import http from "http";
 
 /**
  * Platform Accessory

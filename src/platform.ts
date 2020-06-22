@@ -1,9 +1,8 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { ExamplePlatformAccessory } from './platformAccessory';
-
-const net = require('net');
-const events = require('events');
+import net from 'net';
+import events from 'events';
 
 /**
  * HomebridgePlatform
