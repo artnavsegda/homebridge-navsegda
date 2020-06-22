@@ -74,7 +74,27 @@ export class ExamplePlatformAccessory {
       this.platform.log.info(this.accessory.context.device.uniqueId + ' payload update ' +  payload.joinType);
       this.platform.log.info(this.accessory.context.device.uniqueId + ' payload join ' +  payload.join);
       this.platform.log.info(this.accessory.context.device.uniqueId + ' payload value ' +  payload.payloadValue);
+
+      if (payload.joinType == "digital" && payload.join == this.accessory.context.device.setOn)
+      {
+        this.platform.log.info(this.accessory.context.device.uniqueId + " has to be powered on");
+        //
+        this.service.updateCharacteristic(this.platform.Characteristic.On, 1);
+        //this.service.updateCharacteristic(this.platform.Characteristic.Brightness, 100);
+      }
+      else if (payload.joinType == "digital" && payload.join == this.accessory.context.device.setOff)
+      {
+        this.platform.log.info(this.accessory.context.device.uniqueId + " has to be powered off");
+        //
+        this.service.updateCharacteristic(this.platform.Characteristic.On, 0);
+        //this.service.updateCharacteristic(this.platform.Characteristic.Brightness, 0);
+      }
+
     });
+
+    this.platform.log.debug("setOn join " + this.accessory.context.device.setOn);
+    this.platform.log.debug("setOff join " + this.accessory.context.device.setOff);
+
   }
 
   /**
