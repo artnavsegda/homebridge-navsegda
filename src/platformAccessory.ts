@@ -50,10 +50,15 @@ export class ExamplePlatformAccessory {
       .on('set', this.setOn.bind(this))                // SET - bind to the `setOn` method below
       .on('get', this.getOn.bind(this));               // GET - bind to the `getOn` method below
 
-    // register handlers for the Brightness Characteristic
-    this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-      .on('set', this.setBrightness.bind(this))       // SET - bind to the 'setBrightness` method below
-      .on('get', this.getBrightness.bind(this));       // GET - bind to the 'getBrightness` method below
+    if (this.accessory.context.device.setBrightness)
+    {
+      // register handlers for the Brightness Characteristic
+      this.service.getCharacteristic(this.platform.Characteristic.Brightness)
+        .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
+      if (this.accessory.context.device.getBrightness)
+        this.service.getCharacteristic(this.platform.Characteristic.Brightness)
+          .on('get', this.getBrightness.bind(this));       // GET - bind to the 'getBrightness` method below
+    }
 
     // EXAMPLE ONLY
     // Example showing how to update the state of a Characteristic asynchronously instead
@@ -72,21 +77,20 @@ export class ExamplePlatformAccessory {
     // }, 10000);
 
     this.accessory.context.eventFeedback.on('update', (payload) => {
-      this.platform.log.info(this.accessory.context.device.uniqueId + ' payload update ' +  payload.joinType);
-      this.platform.log.info(this.accessory.context.device.uniqueId + ' payload join ' +  payload.join);
-      this.platform.log.info(this.accessory.context.device.uniqueId + ' payload value ' +  payload.payloadValue);
+      this.platform.log.info(this.accessory.context.device.displayName + ' payload update ' +  payload.joinType);
+      this.platform.log.info(this.accessory.context.device.displayName + ' payload join ' +  payload.join);
+      this.platform.log.info(this.accessory.context.device.displayName + ' payload value ' +  payload.payloadValue);
 
       if (payload.joinType == "digital" && payload.join == this.accessory.context.device.getOn)
       {
-        this.platform.log.info(this.accessory.context.device.uniqueId + " set value to " + payload.payloadValue);
+        this.platform.log.info(this.accessory.context.device.displayName + " set value to " + payload.payloadValue);
         this.service.updateCharacteristic(this.platform.Characteristic.On, payload.payloadValue);
       }
       else if (payload.joinType == "analog" && payload.join == this.accessory.context.device.getBrightness)
       {
-        this.platform.log.info(this.accessory.context.device.uniqueId + " set brightness to " + payload.payloadValue);
+        this.platform.log.info(this.accessory.context.device.displayName + " set brightness to " + payload.payloadValue);
         this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
       }
-
     });
 
     this.platform.log.debug(this.accessory.context.device.displayName + " setOn join " + this.accessory.context.device.setOn);
@@ -238,7 +242,7 @@ export class ExamplePlatformAccessory {
       }).end();
     }
 
-    aread(this.accessory.context.device.getOn, (value) => {
+    aread(this.accessory.context.device.getBrightness, (value) => {
       const currentBrightness = value;
       this.platform.log.debug('Get Characteristic Brightness ->', currentBrightness);
       callback(null, currentBrightness);
