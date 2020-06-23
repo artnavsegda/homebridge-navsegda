@@ -186,9 +186,9 @@ export class ExamplePlatformAccessory {
     this.exampleStates.On = value as boolean;
 
     if (value as boolean)
-      digitalWrite(this.accessory.context.device.setOn);
+      this.digitalWrite(this.accessory.context.device.setOn);
     else
-      digitalWrite(this.accessory.context.device.setOff);
+      this.digitalWrite(this.accessory.context.device.setOff);
 
     this.platform.log.debug('Set Characteristic On ->', value);
 
@@ -249,7 +249,7 @@ export class ExamplePlatformAccessory {
     http.request({
       host: '192.168.88.41',
       port: '7001',
-      path: '/A' + pad(join, 4) + 'V' + this.pad(value, 5)
+      path: '/A' + this.pad(join, 4) + 'V' + this.pad(value, 5)
     }, (response) => {
       var str = '';
       response.on('data', (chunk) => str += chunk);
