@@ -161,6 +161,21 @@ export class ExamplePlatformAccessory {
     });
   }
 
+  pad(num, size){     return ('000000000' + num).substr(-size); }
+
+  digitalWrite(join)
+  {
+    http.request({
+      host: '192.168.88.41',
+      port: '7001',
+      path: '/D' + this.pad(join, 4)
+    }, (response) => {
+      var str = '';
+      response.on('data', (chunk) => str += chunk);
+      response.on('end', () => console.log(str));
+    }).end();
+  }
+
   /**
    * Handle "SET" requests from HomeKit
    * These are sent when the user changes the state of an accessory, for example, turning on a Light bulb.
@@ -170,24 +185,10 @@ export class ExamplePlatformAccessory {
     // implement your own code to turn your device on/off
     this.exampleStates.On = value as boolean;
 
-    function dwrite(join)
-    {
-      function pad(num, size){     return ('000000000' + num).substr(-size); }
-      http.request({
-        host: '192.168.88.41',
-        port: '7001',
-        path: '/D' + pad(join, 4)
-      }, (response) => {
-        var str = '';
-        response.on('data', (chunk) => str += chunk);
-        response.on('end', () => console.log(str));
-      }).end();
-    }
-
     if (value as boolean)
-      dwrite(this.accessory.context.device.setOn);
+      digitalWrite(this.accessory.context.device.setOn);
     else
-      dwrite(this.accessory.context.device.setOff);
+      digitalWrite(this.accessory.context.device.setOff);
 
     this.platform.log.debug('Set Characteristic On ->', value);
 
@@ -197,11 +198,10 @@ export class ExamplePlatformAccessory {
 
   digitalRead(join, returnFn)
   {
-    function pad(num, size){     return ('000000000' + num).substr(-size); }
     http.request({
       host: '192.168.88.41',
       port: '7001',
-      path: '/G' + pad(join, 4)
+      path: '/G' + this.pad(join, 4)
     }, (response) => {
       var str = '';
       response.on('data', (chunk) => str += chunk);
@@ -246,11 +246,10 @@ export class ExamplePlatformAccessory {
 
   analogWrite(join, value)
   {
-    function pad(num, size){     return ('000000000' + num).substr(-size); }
     http.request({
       host: '192.168.88.41',
       port: '7001',
-      path: '/A' + pad(join, 4) + 'V' + pad(value, 5)
+      path: '/A' + pad(join, 4) + 'V' + this.pad(value, 5)
     }, (response) => {
       var str = '';
       response.on('data', (chunk) => str += chunk);
@@ -260,11 +259,10 @@ export class ExamplePlatformAccessory {
 
   analogRead(join, returnFn)
   {
-    function pad(num, size){     return ('000000000' + num).substr(-size); }
     http.request({
       host: '192.168.88.41',
       port: '7001',
-      path: '/R' + pad(join, 4)
+      path: '/R' + this.pad(join, 4)
     }, (response) => {
       var str = '';
       response.on('data', (chunk) => str += chunk);
