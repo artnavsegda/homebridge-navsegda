@@ -144,9 +144,9 @@ export class ExamplePlatformAccessory {
     // }, 10000);
 
     this.accessory.context.eventFeedback.on('update', (payload) => {
-      this.platform.log.info(this.accessory.context.device.displayName + ' payload update ' +  payload.joinType);
-      this.platform.log.info(this.accessory.context.device.displayName + ' payload join ' +  payload.join);
-      this.platform.log.info(this.accessory.context.device.displayName + ' payload value ' +  payload.payloadValue);
+      //this.platform.log.info(this.accessory.context.device.displayName + ' payload update ' +  payload.joinType);
+      //this.platform.log.info(this.accessory.context.device.displayName + ' payload join ' +  payload.join);
+      //this.platform.log.info(this.accessory.context.device.displayName + ' payload value ' +  payload.payloadValue);
 
       if (payload.joinType == "digital" && payload.join == this.accessory.context.device.getOn)
       {
