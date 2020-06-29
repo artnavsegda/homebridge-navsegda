@@ -54,19 +54,26 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
     const eventFeedback = new events.EventEmitter();
     const client = net.createConnection({ port: 6666, host: "192.168.88.41"}, () => this.log.info('Listening to controller feedback'));
     client.on('data', (data) => {
-      let joinType;
-      switch (data[0])
-      {
-        case 68:
-          joinType = "digital";
-        break;
-        case 65:
-          joinType = "analog";
-        break;
-      }
-      let join = data.toString("utf8",1,5);
-      let payloadValue = data.toString("utf8",6,11);
-      eventFeedback.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
+      let parseString = data.toString("utf8")
+      //console.log('INRAW: ' + parseString);
+      let commands = parseString.split('X');
+      commands.pop();
+      commands.forEach((value) => {
+        //console.log("section: " + value);
+        let joinType;
+        switch (value.charAt(0))
+        {
+          case 'D':
+            joinType = "digital";
+          break;
+          case 'A':
+            joinType = "analog";
+          break;
+        }
+        let join = value.substr(1,4);
+        let payloadValue = value.substr(6,5);
+        eventFeedback.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
+      });
     });
 
     // loop over the discovered devices and register each one if it has not already been registered

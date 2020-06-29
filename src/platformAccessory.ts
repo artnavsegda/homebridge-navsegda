@@ -148,15 +148,58 @@ export class ExamplePlatformAccessory {
       //this.platform.log.info(this.accessory.context.device.displayName + ' payload join ' +  payload.join);
       //this.platform.log.info(this.accessory.context.device.displayName + ' payload value ' +  payload.payloadValue);
 
-      if (payload.joinType == "digital" && payload.join == this.accessory.context.device.getOn)
+      if (payload.joinType == "digital")
       {
-        this.platform.log.info(this.accessory.context.device.displayName + " set value to " + payload.payloadValue);
-        this.service.updateCharacteristic(this.platform.Characteristic.On, payload.payloadValue);
+        if (payload.join == this.accessory.context.device.getOn)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set value to " + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.On, payload.payloadValue);
+        }
+        else if (payload.join == this.accessory.context.device.getGoingMin)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set GoingMin to " + payload.payloadValue);
+          if (payload.payloadValue == 1)
+          {
+            this.platform.log.info(this.accessory.context.device.displayName + " set PositionState to 0");
+            this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 0);
+          }
+        }
+        else if (payload.join == this.accessory.context.device.getGoingMax)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set GoingMax to " + payload.payloadValue);
+          if (payload.payloadValue == 1)
+          {
+            this.platform.log.info(this.accessory.context.device.displayName + " set PositionState to 1");
+            this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 1);
+          }
+        }
+        else if (payload.join == this.accessory.context.device.getStopped)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set Stopped to " + payload.payloadValue);
+          if (payload.payloadValue == 1)
+          {
+            this.platform.log.info(this.accessory.context.device.displayName + " set PositionState to 2");
+            this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 2);
+          }
+        }
       }
-      else if (payload.joinType == "analog" && payload.join == this.accessory.context.device.getBrightness)
+      else if (payload.joinType == "analog")
       {
-        this.platform.log.info(this.accessory.context.device.displayName + " set brightness to " + payload.payloadValue);
-        this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
+        if (payload.join == this.accessory.context.device.getBrightness)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set brightness to " + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
+        }
+        else if (payload.join == this.accessory.context.device.getCurrentPosition)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set CurrentPosition to " + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.CurrentPosition, payload.payloadValue);
+        }
+        else if (payload.join == this.accessory.context.device.getTargetPosition)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set TargetPosition to " + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.TargetPosition, payload.payloadValue);
+        }
       }
     });
   }
