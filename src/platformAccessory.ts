@@ -96,7 +96,7 @@ export class ExamplePlatformAccessory {
     }
     else if (this.accessory.context.device.type == "WindowCovering")
     {
-      // get the LightBulb service if it exists, otherwise create a new LightBulb service
+      // get the WindowCovering service if it exists, otherwise create a new WindowCovering service
       // you can create multiple services for each accessory
       this.service = this.accessory.getService(this.platform.Service.WindowCovering) || this.accessory.addService(this.platform.Service.WindowCovering);
 
@@ -121,6 +121,12 @@ export class ExamplePlatformAccessory {
 
       this.service.getCharacteristic(this.platform.Characteristic.PositionState)
         .on('get', this.handlePositionStateGet.bind(this));
+
+      if (this.accessory.context.device.setHoldPosition)
+      {
+        this.service.getCharacteristic(this.platform.Characteristic.HoldPosition)
+          .on('set', this.handleHoldPositionSet.bind(this));
+      }
     }
     else
     {
@@ -424,6 +430,16 @@ export class ExamplePlatformAccessory {
   handleTargetPositionSet(value, callback) {
     this.platform.log.debug('Triggered SET TargetPosition:' + value);
     this.analogWrite(this.accessory.context.device.setTargetPosition, value);
+    callback(null);
+  }
+
+  /**
+   * Handle requests to set the "Hold Position" characteristic
+   */
+  handleHoldPositionSet(value, callback) {
+    this.platform.log.debug('Triggered SET HoldPosition:' + value);
+    if (value as boolean)
+      this.digitalWrite(this.accessory.context.device.setHoldPosition);
     callback(null);
   }
 
