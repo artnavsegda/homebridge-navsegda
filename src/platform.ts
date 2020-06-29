@@ -52,7 +52,37 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    */
   discoverDevices() {
     const eventFeedback = new events.EventEmitter();
-    const client = net.createConnection({ port: 6666, host: "192.168.88.41"}, () => this.log.info('Listening to controller feedback'));
+    const client = new net.Socket()
+    var intervalConnect;
+    intervalConnect = false;
+
+    function connect() {
+        client.connect({ port: 6666, host: "192.168.88.41"})
+    }
+
+    function launchIntervalConnect() {
+        if(false != intervalConnect) return
+        intervalConnect = setInterval(connect, 5000)
+    }
+
+    function clearIntervalConnect() {
+        if(false == intervalConnect) return
+        clearInterval(intervalConnect)
+        intervalConnect = false
+    }
+
+    client.on('connect', () => {
+        clearIntervalConnect()
+        console.log('connected to server', 'TCP')
+        client.write('CLIENT connected');
+    })
+
+    client.on('error', (err) => {
+        console.log('TCP ERROR')
+        launchIntervalConnect()
+    })
+    client.on('close', launchIntervalConnect)
+    client.on('end', launchIntervalConnect)
     client.on('data', (data) => {
       let parseString = data.toString("utf8")
       //console.log('INRAW: ' + parseString);
@@ -75,6 +105,8 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         eventFeedback.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
       });
     });
+
+    connect();
 
     // loop over the discovered devices and register each one if it has not already been registered
     for (const device of this.config.accessories) {
