@@ -206,6 +206,16 @@ export class ExamplePlatformAccessory {
           this.platform.log.info(this.accessory.context.device.displayName + " set TargetPosition to " + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.TargetPosition, payload.payloadValue);
         }
+        else if (payload.join == this.accessory.context.device.getHue)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set Hue to " + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.Hue, payload.payloadValue);
+        }
+        else if (payload.join == this.accessory.context.device.getSaturation)
+        {
+          this.platform.log.info(this.accessory.context.device.displayName + " set Saturation to " + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.Saturation, payload.payloadValue);
+        }
       }
     });
   }
