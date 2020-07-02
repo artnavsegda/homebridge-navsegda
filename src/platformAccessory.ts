@@ -233,6 +233,10 @@ export class ExamplePlatformAccessory {
       response.on('data', (chunk) => str += chunk);
       response.on('end', () => console.log(str));
     }).end();
+    req.on('error', (e) => {
+      console.error(`problem with request: ${e.message}`);
+    });
+    req.end();
   }
 
   /**
@@ -269,6 +273,10 @@ export class ExamplePlatformAccessory {
         returnFn(str);
       });
     }).end();
+    req.on('error', (e) => {
+      console.error(`problem with request: ${e.message}`);
+    });
+    req.end();
   }
 
   /**
@@ -314,6 +322,10 @@ export class ExamplePlatformAccessory {
       response.on('data', (chunk) => str += chunk);
       response.on('end', () => console.log(str));
     }).end();
+    req.on('error', (e) => {
+      console.error(`problem with request: ${e.message}`);
+    });
+    req.end();
   }
 
   analogRead(join, returnFn)
@@ -329,7 +341,11 @@ export class ExamplePlatformAccessory {
         console.log("read:" + str);
         returnFn(str);
       });
-    }).end();
+    });
+    req.on('error', (e) => {
+      console.error(`problem with request: ${e.message}`);
+    });
+    req.end();
   }
 
   /**
