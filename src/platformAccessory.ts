@@ -272,6 +272,7 @@ export class ExamplePlatformAccessory {
       });
     }).on('error', (e) => {
       console.error(`problem with request: ${e.message}`);
+      returnFn("0000");
     }).end();
   }
 
@@ -337,6 +338,7 @@ export class ExamplePlatformAccessory {
       });
     }).on('error', (e) => {
       console.error(`problem with request: ${e.message}`);
+      returnFn("0000");
     }).end();
   }
 
