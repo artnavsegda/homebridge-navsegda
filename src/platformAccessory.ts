@@ -231,7 +231,7 @@ export class ExamplePlatformAccessory {
     }, (response) => {
       var str = '';
       response.on('data', (chunk) => str += chunk);
-      response.on('end', () => console.log(str));
+      response.on('end', () => this.platform.log.info("result: " + str));
     }).on('error', (e) => {
       console.error(`problem with request: ${e.message}`);
     }).end();
@@ -267,7 +267,7 @@ export class ExamplePlatformAccessory {
       var str = '';
       response.on('data', (chunk) => str += chunk);
       response.on('end', () => {
-        console.log("read:" + str);
+        this.platform.log.info("result: " + str);
         returnFn(str);
       });
     }).on('error', (e) => {
@@ -316,7 +316,7 @@ export class ExamplePlatformAccessory {
     }, (response) => {
       var str = '';
       response.on('data', (chunk) => str += chunk);
-      response.on('end', () => console.log(str));
+      response.on('end', () => this.platform.log.info("result: " + str));
     }).on('error', (e) => {
       console.error(`problem with request: ${e.message}`);
     }).end();
@@ -332,7 +332,7 @@ export class ExamplePlatformAccessory {
       var str = '';
       response.on('data', (chunk) => str += chunk);
       response.on('end', () => {
-        console.log("read:" + str);
+        this.platform.log.info("result: " + str)
         returnFn(str);
       });
     }).on('error', (e) => {
