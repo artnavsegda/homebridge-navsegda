@@ -225,7 +225,7 @@ export class ExamplePlatformAccessory {
   digitalWrite(join)
   {
     http.request({
-      host: this.accessory.context.host,
+      host: this.accessory.context.hostname,
       port: '7001',
       path: '/D' + this.pad(join, 4)
     }, (response) => {
@@ -260,7 +260,7 @@ export class ExamplePlatformAccessory {
   digitalRead(join, returnFn)
   {
     http.request({
-      host: this.accessory.context.host,
+      host: this.accessory.context.hostname,
       port: '7001',
       path: '/G' + this.pad(join, 4)
     }, (response) => {
@@ -311,7 +311,7 @@ export class ExamplePlatformAccessory {
   analogWrite(join, value)
   {
     http.request({
-      host: this.accessory.context.host,
+      host: this.accessory.context.hostname,
       port: '7001',
       path: '/A' + this.pad(join, 4) + 'V' + this.pad(value, 5)
     }, (response) => {
@@ -326,7 +326,7 @@ export class ExamplePlatformAccessory {
   analogRead(join, returnFn)
   {
     http.request({
-      host: this.accessory.context.host,
+      host: this.accessory.context.hostname,
       port: '7001',
       path: '/R' + this.pad(join, 4)
     }, (response) => {
