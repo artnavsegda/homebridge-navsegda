@@ -30,7 +30,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
     this.api.on('didFinishLaunching', () => {
       log.debug('Executed didFinishLaunching callback');
       // run the method to discover / register your devices as accessories
-      this.discoverDevices();
+      this.discoverDevices(config.host);
     });
   }
 
@@ -50,14 +50,14 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    * Accessories must only be registered once, previously created accessories
    * must not be registered again to prevent "duplicate UUID" errors.
    */
-  discoverDevices() {
+  discoverDevices(hostname) {
     const eventFeedback = new events.EventEmitter();
     const client = new net.Socket()
     var intervalConnect;
     intervalConnect = false;
 
     function connect() {
-        client.connect({ port: 6666, host: "192.168.88.41"})
+        client.connect({ port: 6666, host: hostname})
     }
 
     function launchIntervalConnect() {
@@ -144,6 +144,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
         accessory.context.eventFeedback = eventFeedback;
+        accessory.context.host = this.config.host;
 
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
