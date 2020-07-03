@@ -144,7 +144,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
         accessory.context.eventFeedback = eventFeedback;
-        accessory.context.hostname = this.config.host;
+        accessory.context.hostname = hostname;
 
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
