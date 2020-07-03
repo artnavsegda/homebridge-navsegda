@@ -2,22 +2,8 @@ import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallb
 import { ExampleHomebridgePlatform } from './platform';
 import http from "http";
 
-/**
- * Platform Accessory
- * An instance of this class is created for each accessory your platform registers
- * Each accessory may expose multiple services of different service types.
- */
 export class ExamplePlatformAccessory {
   private service: Service;
-
-  /**
-   * These are just used to create a working example
-   * You should implement your own code to track the state of your accessory
-   */
-  private exampleStates = {
-    On: false,
-    Brightness: 100,
-  }
 
   constructor(
     private readonly platform: ExampleHomebridgePlatform,
@@ -242,10 +228,6 @@ export class ExamplePlatformAccessory {
    * These are sent when the user changes the state of an accessory, for example, turning on a Light bulb.
    */
   setOn(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-
-    // implement your own code to turn your device on/off
-    this.exampleStates.On = value as boolean;
-
     if (value as boolean)
       this.digitalWrite(this.accessory.context.device.setOn);
     else
@@ -290,10 +272,6 @@ export class ExamplePlatformAccessory {
    * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
   getOn(callback: CharacteristicGetCallback) {
-
-    // implement your own code to check if the device is on
-    //const isOn = this.exampleStates.On;
-
     this.digitalRead(this.accessory.context.device.getOn, (value) => {
       const isOn = value;
       this.platform.log.debug('Get Characteristic On ->', isOn);
@@ -347,9 +325,6 @@ export class ExamplePlatformAccessory {
    * These are sent when the user changes the state of an accessory, for example, changing the Brightness
    */
   setBrightness(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-
-    // implement your own code to set the brightness
-    this.exampleStates.Brightness = value as number;
     this.analogWrite(this.accessory.context.device.setBrightness, value);
     this.platform.log.debug('Set Characteristic Brightness -> ', value);
 
