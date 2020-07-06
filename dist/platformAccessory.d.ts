@@ -6,6 +6,7 @@ export declare class ExamplePlatformAccessory {
     private service;
     constructor(platform: ExampleHomebridgePlatform, accessory: PlatformAccessory);
     pad(num: any, size: any): string;
+    fetchRetry(url: any): any;
     digitalWrite(join: any): void;
     /**
      * Handle "SET" requests from HomeKit

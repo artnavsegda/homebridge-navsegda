@@ -209,10 +209,19 @@ export class ExamplePlatformAccessory {
 
   pad(num, size){     return ('000000000' + num).substr(-size); }
 
+  fetchRetry(url) {
+    // Return a fetch request
+    return fetch(url).then(res => {
+      // check if successful. If so, return the response transformed to json
+      if (res.ok) return res.text()
+      // else, return a call to fetchRetry
+      return this.fetchRetry(url)
+    })
+  }
+
   digitalWrite(join)
   {
-    fetch('http://'+this.accessory.context.hostname+':7001/D' + this.pad(join, 4))
-      .then(res => res.text())
+    this.fetchRetry('http://'+this.accessory.context.hostname+':7001/D' + this.pad(join, 4))
       .then(body => this.platform.log.info("result: " + body))
       .catch(err => console.error(err));
   }
@@ -235,8 +244,7 @@ export class ExamplePlatformAccessory {
 
   digitalRead(join, returnFn)
   {
-    fetch('http://'+this.accessory.context.hostname+':7001/G' + this.pad(join, 4))
-        .then(res => res.text())
+    this.fetchRetry('http://'+this.accessory.context.hostname+':7001/G' + this.pad(join, 4))
         .then(body => {
           this.platform.log.info("result: " + body);
           returnFn(body);
@@ -275,16 +283,14 @@ export class ExamplePlatformAccessory {
 
   analogWrite(join, value)
   {
-    fetch('http://'+this.accessory.context.hostname+':7001/A' + this.pad(join, 4) + 'V' + this.pad(value, 5))
-        .then(res => res.text())
+    this.fetchRetry('http://'+this.accessory.context.hostname+':7001/A' + this.pad(join, 4) + 'V' + this.pad(value, 5))
         .then(body => this.platform.log.info("result: " + body))
         .catch(err => console.error(err));
   }
 
   analogRead(join, returnFn)
   {
-    fetch('http://'+this.accessory.context.hostname+':7001/R' + this.pad(join, 4))
-        .then(res => res.text())
+    this.fetchRetry('http://'+this.accessory.context.hostname+':7001/R' + this.pad(join, 4))
         .then(body => {
           this.platform.log.info("result: " + body);
           returnFn(body);
