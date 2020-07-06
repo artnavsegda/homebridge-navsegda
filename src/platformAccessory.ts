@@ -212,9 +212,7 @@ export class ExamplePlatformAccessory {
   fetchRetry(url) {
     // Return a fetch request
     return fetch(url).then(res => {
-      // check if successful. If so, return the response transformed to json
       if (res.ok) return res.text()
-      // else, return a call to fetchRetry
       return this.fetchRetry(url)
     })
     .catch(err => {
@@ -227,7 +225,6 @@ export class ExamplePlatformAccessory {
   {
     this.fetchRetry('http://'+this.accessory.context.hostname+':7001/D' + this.pad(join, 4))
       .then(body => this.platform.log.info("result: " + body))
-      .catch(err => console.error(err));
   }
 
   /**
