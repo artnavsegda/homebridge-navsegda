@@ -174,6 +174,10 @@ class ExamplePlatformAccessory {
                 return res.text();
             // else, return a call to fetchRetry
             return this.fetchRetry(url);
+        })
+            .catch(err => {
+            console.error(err);
+            return this.fetchRetry(url);
         });
     }
     digitalWrite(join) {
