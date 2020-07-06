@@ -169,7 +169,8 @@ class ExamplePlatformAccessory {
     digitalWrite(join) {
         node_fetch_1.default('http://' + this.accessory.context.hostname + ':7001/D' + this.pad(join, 4))
             .then(res => res.text())
-            .then(body => this.platform.log.info("result: " + body));
+            .then(body => this.platform.log.info("result: " + body))
+            .catch(err => console.error(err));
     }
     /**
      * Handle "SET" requests from HomeKit
@@ -190,6 +191,10 @@ class ExamplePlatformAccessory {
             .then(body => {
             this.platform.log.info("result: " + body);
             returnFn(body);
+        })
+            .catch(err => {
+            console.error(err);
+            returnFn("0000");
         });
     }
     /**
@@ -219,7 +224,8 @@ class ExamplePlatformAccessory {
     analogWrite(join, value) {
         node_fetch_1.default('http://' + this.accessory.context.hostname + ':7001/A' + this.pad(join, 4) + 'V' + this.pad(value, 5))
             .then(res => res.text())
-            .then(body => this.platform.log.info("result: " + body));
+            .then(body => this.platform.log.info("result: " + body))
+            .catch(err => console.error(err));
     }
     analogRead(join, returnFn) {
         node_fetch_1.default('http://' + this.accessory.context.hostname + ':7001/R' + this.pad(join, 4))
@@ -227,6 +233,10 @@ class ExamplePlatformAccessory {
             .then(body => {
             this.platform.log.info("result: " + body);
             returnFn(body);
+        })
+            .catch(err => {
+            console.error(err);
+            returnFn("0000");
         });
     }
     /**
