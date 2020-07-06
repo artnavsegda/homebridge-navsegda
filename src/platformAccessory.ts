@@ -1,6 +1,7 @@
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
 import { ExampleHomebridgePlatform } from './platform';
 import http from "http";
+import fetch from "node-fetch";
 
 export class ExamplePlatformAccessory {
   private service: Service;
@@ -210,17 +211,9 @@ export class ExamplePlatformAccessory {
 
   digitalWrite(join)
   {
-    http.request({
-      host: this.accessory.context.hostname,
-      port: '7001',
-      path: '/D' + this.pad(join, 4)
-    }, (response) => {
-      var str = '';
-      response.on('data', (chunk) => str += chunk);
-      response.on('end', () => this.platform.log.info("result: " + str));
-    }).on('error', (e) => {
-      console.error(`problem with request: ${e.message}`);
-    }).end();
+    fetch('http://'+this.accessory.context.hostname+':7001/D' + this.pad(join, 4))
+      .then(res => res.text())
+      .then(body => this.platform.log.info("result: " + body));
   }
 
   /**
@@ -241,21 +234,12 @@ export class ExamplePlatformAccessory {
 
   digitalRead(join, returnFn)
   {
-    http.request({
-      host: this.accessory.context.hostname,
-      port: '7001',
-      path: '/G' + this.pad(join, 4)
-    }, (response) => {
-      var str = '';
-      response.on('data', (chunk) => str += chunk);
-      response.on('end', () => {
-        this.platform.log.info("result: " + str);
-        returnFn(str);
-      });
-    }).on('error', (e) => {
-      console.error(`problem with request: ${e.message}`);
-      returnFn("0000");
-    }).end();
+    fetch('http://'+this.accessory.context.hostname+':7001/G' + this.pad(join, 4))
+        .then(res => res.text())
+        .then(body => {
+          this.platform.log.info("result: " + body);
+          returnFn(body);
+        });
   }
 
   /**
@@ -278,8 +262,6 @@ export class ExamplePlatformAccessory {
       callback(null, isOn);
     });
 
-    //this.platform.log.debug('Get Characteristic On ->', isOn);
-
     // you must call the callback function
     // the first argument should be null if there were no errors
     // the second argument should be the value to return
@@ -288,36 +270,19 @@ export class ExamplePlatformAccessory {
 
   analogWrite(join, value)
   {
-    http.request({
-      host: this.accessory.context.hostname,
-      port: '7001',
-      path: '/A' + this.pad(join, 4) + 'V' + this.pad(value, 5)
-    }, (response) => {
-      var str = '';
-      response.on('data', (chunk) => str += chunk);
-      response.on('end', () => this.platform.log.info("result: " + str));
-    }).on('error', (e) => {
-      console.error(`problem with request: ${e.message}`);
-    }).end();
+    fetch('http://'+this.accessory.context.hostname+':7001/A' + this.pad(join, 4) + 'V' + this.pad(value, 5))
+        .then(res => res.text())
+        .then(body => this.platform.log.info("result: " + body));
   }
 
   analogRead(join, returnFn)
   {
-    http.request({
-      host: this.accessory.context.hostname,
-      port: '7001',
-      path: '/R' + this.pad(join, 4)
-    }, (response) => {
-      var str = '';
-      response.on('data', (chunk) => str += chunk);
-      response.on('end', () => {
-        this.platform.log.info("result: " + str)
-        returnFn(str);
-      });
-    }).on('error', (e) => {
-      console.error(`problem with request: ${e.message}`);
-      returnFn("0000");
-    }).end();
+    fetch('http://'+this.accessory.context.hostname+':7001/R' + this.pad(join, 4))
+        .then(res => res.text())
+        .then(body => {
+          this.platform.log.info("result: " + body);
+          returnFn(body);
+        });
   }
 
   /**

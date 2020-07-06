@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExamplePlatformAccessory = void 0;
-const http_1 = __importDefault(require("http"));
+const node_fetch_1 = __importDefault(require("node-fetch"));
 class ExamplePlatformAccessory {
     constructor(platform, accessory) {
         this.platform = platform;
@@ -167,17 +167,9 @@ class ExamplePlatformAccessory {
     }
     pad(num, size) { return ('000000000' + num).substr(-size); }
     digitalWrite(join) {
-        http_1.default.request({
-            host: this.accessory.context.hostname,
-            port: '7001',
-            path: '/D' + this.pad(join, 4)
-        }, (response) => {
-            var str = '';
-            response.on('data', (chunk) => str += chunk);
-            response.on('end', () => this.platform.log.info("result: " + str));
-        }).on('error', (e) => {
-            console.error(`problem with request: ${e.message}`);
-        }).end();
+        node_fetch_1.default('http://' + this.accessory.context.hostname + ':7001/D' + this.pad(join, 4))
+            .then(res => res.text())
+            .then(body => this.platform.log.info("result: " + body));
     }
     /**
      * Handle "SET" requests from HomeKit
@@ -193,21 +185,12 @@ class ExamplePlatformAccessory {
         callback(null);
     }
     digitalRead(join, returnFn) {
-        http_1.default.request({
-            host: this.accessory.context.hostname,
-            port: '7001',
-            path: '/G' + this.pad(join, 4)
-        }, (response) => {
-            var str = '';
-            response.on('data', (chunk) => str += chunk);
-            response.on('end', () => {
-                this.platform.log.info("result: " + str);
-                returnFn(str);
-            });
-        }).on('error', (e) => {
-            console.error(`problem with request: ${e.message}`);
-            returnFn("0000");
-        }).end();
+        node_fetch_1.default('http://' + this.accessory.context.hostname + ':7001/G' + this.pad(join, 4))
+            .then(res => res.text())
+            .then(body => {
+            this.platform.log.info("result: " + body);
+            returnFn(body);
+        });
     }
     /**
      * Handle the "GET" requests from HomeKit
@@ -228,41 +211,23 @@ class ExamplePlatformAccessory {
             this.platform.log.debug('Get Characteristic On ->', isOn);
             callback(null, isOn);
         });
-        //this.platform.log.debug('Get Characteristic On ->', isOn);
         // you must call the callback function
         // the first argument should be null if there were no errors
         // the second argument should be the value to return
         //callback(null, isOn);
     }
     analogWrite(join, value) {
-        http_1.default.request({
-            host: this.accessory.context.hostname,
-            port: '7001',
-            path: '/A' + this.pad(join, 4) + 'V' + this.pad(value, 5)
-        }, (response) => {
-            var str = '';
-            response.on('data', (chunk) => str += chunk);
-            response.on('end', () => this.platform.log.info("result: " + str));
-        }).on('error', (e) => {
-            console.error(`problem with request: ${e.message}`);
-        }).end();
+        node_fetch_1.default('http://' + this.accessory.context.hostname + ':7001/A' + this.pad(join, 4) + 'V' + this.pad(value, 5))
+            .then(res => res.text())
+            .then(body => this.platform.log.info("result: " + body));
     }
     analogRead(join, returnFn) {
-        http_1.default.request({
-            host: this.accessory.context.hostname,
-            port: '7001',
-            path: '/R' + this.pad(join, 4)
-        }, (response) => {
-            var str = '';
-            response.on('data', (chunk) => str += chunk);
-            response.on('end', () => {
-                this.platform.log.info("result: " + str);
-                returnFn(str);
-            });
-        }).on('error', (e) => {
-            console.error(`problem with request: ${e.message}`);
-            returnFn("0000");
-        }).end();
+        node_fetch_1.default('http://' + this.accessory.context.hostname + ':7001/R' + this.pad(join, 4))
+            .then(res => res.text())
+            .then(body => {
+            this.platform.log.info("result: " + body);
+            returnFn(body);
+        });
     }
     /**
      * Handle "SET" requests from HomeKit
