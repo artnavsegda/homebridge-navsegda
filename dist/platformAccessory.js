@@ -1,14 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExamplePlatformAccessory = void 0;
-const node_fetch_1 = __importDefault(require("node-fetch"));
 class ExamplePlatformAccessory {
-    constructor(platform, accessory) {
+    constructor(platform, accessory, cip) {
         this.platform = platform;
         this.accessory = accessory;
+        this.cip = cip;
         // set accessory information
         this.accessory.getService(this.platform.Service.AccessoryInformation)
             .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Default-Manufacturer')
@@ -165,25 +162,8 @@ class ExamplePlatformAccessory {
             }
         });
     }
-    pad(num, size) { return ('000000000' + num).substr(-size); }
-    fetchRetry(url) {
-        // Return a fetch request
-        return node_fetch_1.default(url).then(res => {
-            // check if successful. If so, return the response transformed to json
-            if (res.ok)
-                return res.text();
-            // else, return a call to fetchRetry
-            return this.fetchRetry(url);
-        })
-            .catch(err => {
-            console.error(err);
-            return this.fetchRetry(url);
-        });
-    }
     digitalWrite(join) {
-        this.fetchRetry('http://' + this.accessory.context.hostname + ':7001/D' + this.pad(join, 4))
-            .then(body => this.platform.log.info("result: " + body))
-            .catch(err => console.error(err));
+        this.cip.pulse(join);
     }
     /**
      * Handle "SET" requests from HomeKit
@@ -199,15 +179,10 @@ class ExamplePlatformAccessory {
         callback(null);
     }
     digitalRead(join, returnFn) {
-        this.fetchRetry('http://' + this.accessory.context.hostname + ':7001/G' + this.pad(join, 4))
-            .then(body => {
-            this.platform.log.info("result: " + body);
-            returnFn(body);
-        })
-            .catch(err => {
-            console.error(err);
-            returnFn("0000");
-        });
+        if (this.cip.dget(join) == 1)
+            returnFn(true);
+        else
+            returnFn(false);
     }
     /**
      * Handle the "GET" requests from HomeKit
@@ -234,20 +209,10 @@ class ExamplePlatformAccessory {
         //callback(null, isOn);
     }
     analogWrite(join, value) {
-        this.fetchRetry('http://' + this.accessory.context.hostname + ':7001/A' + this.pad(join, 4) + 'V' + this.pad(value, 5))
-            .then(body => this.platform.log.info("result: " + body))
-            .catch(err => console.error(err));
+        this.cip.aset(join, value);
     }
     analogRead(join, returnFn) {
-        this.fetchRetry('http://' + this.accessory.context.hostname + ':7001/R' + this.pad(join, 4))
-            .then(body => {
-            this.platform.log.info("result: " + body);
-            returnFn(body);
-        })
-            .catch(err => {
-            console.error(err);
-            returnFn("0000");
-        });
+        returnFn(this.cip.aget(join));
     }
     /**
      * Handle "SET" requests from HomeKit

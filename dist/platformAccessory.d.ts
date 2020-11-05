@@ -3,10 +3,9 @@ import { ExampleHomebridgePlatform } from './platform';
 export declare class ExamplePlatformAccessory {
     private readonly platform;
     private readonly accessory;
+    private readonly cip;
     private service;
-    constructor(platform: ExampleHomebridgePlatform, accessory: PlatformAccessory);
-    pad(num: any, size: any): string;
-    fetchRetry(url: any): any;
+    constructor(platform: ExampleHomebridgePlatform, accessory: PlatformAccessory, cip: any);
     digitalWrite(join: any): void;
     /**
      * Handle "SET" requests from HomeKit

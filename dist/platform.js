@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExampleHomebridgePlatform = void 0;
 const settings_1 = require("./settings");
 const platformAccessory_1 = require("./platformAccessory");
-const net_1 = __importDefault(require("net"));
+const crestron_cip_1 = __importDefault(require("crestron-cip"));
 const events_1 = __importDefault(require("events"));
 /**
  * HomebridgePlatform
@@ -49,56 +49,13 @@ class ExampleHomebridgePlatform {
      */
     discoverDevices(hostname) {
         const eventFeedback = new events_1.default.EventEmitter();
-        const client = new net_1.default.Socket();
-        var intervalConnect;
-        intervalConnect = false;
-        function connect() {
-            client.connect({ port: 6666, host: hostname });
-        }
-        function launchIntervalConnect() {
-            if (false != intervalConnect)
-                return;
-            intervalConnect = setInterval(connect, 5000);
-        }
-        function clearIntervalConnect() {
-            if (false == intervalConnect)
-                return;
-            clearInterval(intervalConnect);
-            intervalConnect = false;
-        }
-        client.on('connect', () => {
-            clearIntervalConnect();
-            console.log('connected to server', 'TCP');
-            client.write('CLIENT connected');
+        const cip = crestron_cip_1.default.connect({ host: hostname, ipid: "\x03" }, () => {
+            this.log.info('CIP connected');
         });
-        client.on('error', (err) => {
-            console.log('TCP ERROR');
-            launchIntervalConnect();
+        cip.subscribe((data) => {
+            this.log.info("type:" + data.type + " join:" + data.join + " value:" + data.value);
+            eventFeedback.emit('update', { joinType: data.type, join: data.join, payloadValue: data.value });
         });
-        client.on('close', launchIntervalConnect);
-        client.on('end', launchIntervalConnect);
-        client.on('data', (data) => {
-            let parseString = data.toString("utf8");
-            //console.log('INRAW: ' + parseString);
-            let commands = parseString.split('X');
-            commands.pop();
-            commands.forEach((value) => {
-                //console.log("section: " + value);
-                let joinType;
-                switch (value.charAt(0)) {
-                    case 'D':
-                        joinType = "digital";
-                        break;
-                    case 'A':
-                        joinType = "analog";
-                        break;
-                }
-                let join = value.substr(1, 4);
-                let payloadValue = value.substr(6, 5);
-                eventFeedback.emit('update', { joinType: joinType, join: join, payloadValue: payloadValue });
-            });
-        });
-        connect();
         // loop over the discovered devices and register each one if it has not already been registered
         for (const device of this.config.accessories) {
             // generate a unique id for the accessory this should be generated from
@@ -117,7 +74,7 @@ class ExampleHomebridgePlatform {
                 this.api.updatePlatformAccessories([existingAccessory]);
                 // create the accessory handler for the restored accessory
                 // this is imported from `platformAccessory.ts`
-                new platformAccessory_1.ExamplePlatformAccessory(this, existingAccessory);
+                new platformAccessory_1.ExamplePlatformAccessory(this, existingAccessory, cip);
             }
             else {
                 // the accessory does not yet exist, so we need to create it
@@ -128,10 +85,9 @@ class ExampleHomebridgePlatform {
                 // the `context` property can be used to store any data about the accessory you may need
                 accessory.context.device = device;
                 accessory.context.eventFeedback = eventFeedback;
-                accessory.context.hostname = hostname;
                 // create the accessory handler for the newly create accessory
                 // this is imported from `platformAccessory.ts`
-                new platformAccessory_1.ExamplePlatformAccessory(this, accessory);
+                new platformAccessory_1.ExamplePlatformAccessory(this, accessory, cip);
                 // link the accessory to your platform
                 this.api.registerPlatformAccessories(settings_1.PLUGIN_NAME, settings_1.PLATFORM_NAME, [accessory]);
             }

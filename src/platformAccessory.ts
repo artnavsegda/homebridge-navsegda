@@ -1,7 +1,5 @@
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
 import { ExampleHomebridgePlatform } from './platform';
-import http from "http";
-import fetch from "node-fetch";
 
 export class ExamplePlatformAccessory {
   private service: Service;
@@ -9,7 +7,10 @@ export class ExamplePlatformAccessory {
   constructor(
     private readonly platform: ExampleHomebridgePlatform,
     private readonly accessory: PlatformAccessory,
+    private readonly cip,
   ) {
+
+
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -207,24 +208,9 @@ export class ExamplePlatformAccessory {
     });
   }
 
-  pad(num, size){     return ('000000000' + num).substr(-size); }
-
-  fetchRetry(url) {
-    // Return a fetch request
-    return fetch(url).then(res => {
-      if (res.ok) return res.text()
-      return this.fetchRetry(url)
-    })
-    .catch(err => {
-      console.error(err);
-      return this.fetchRetry(url)
-    });
-  }
-
   digitalWrite(join)
   {
-    this.fetchRetry('http://'+this.accessory.context.hostname+':7001/D' + this.pad(join, 4))
-      .then(body => this.platform.log.info("result: " + body))
+    this.cip.pulse(join);
   }
 
   /**
@@ -245,15 +231,10 @@ export class ExamplePlatformAccessory {
 
   digitalRead(join, returnFn)
   {
-    this.fetchRetry('http://'+this.accessory.context.hostname+':7001/G' + this.pad(join, 4))
-        .then(body => {
-          this.platform.log.info("result: " + body);
-          returnFn(body);
-        })
-        .catch(err => {
-          console.error(err);
-          returnFn("0000");
-        });
+    if (this.cip.dget(join) == 1)
+      returnFn(true);
+    else
+      returnFn(false);
   }
 
   /**
@@ -284,22 +265,12 @@ export class ExamplePlatformAccessory {
 
   analogWrite(join, value)
   {
-    this.fetchRetry('http://'+this.accessory.context.hostname+':7001/A' + this.pad(join, 4) + 'V' + this.pad(value, 5))
-        .then(body => this.platform.log.info("result: " + body))
-        .catch(err => console.error(err));
+    this.cip.aset(join,value);
   }
 
   analogRead(join, returnFn)
   {
-    this.fetchRetry('http://'+this.accessory.context.hostname+':7001/R' + this.pad(join, 4))
-        .then(body => {
-          this.platform.log.info("result: " + body);
-          returnFn(body);
-        })
-        .catch(err => {
-          console.error(err);
-          returnFn("0000");
-        });
+    returnFn(this.cip.aget(join));
   }
 
   /**

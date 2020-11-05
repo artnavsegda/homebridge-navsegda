@@ -1,7 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { ExamplePlatformAccessory } from './platformAccessory';
-import net from 'net';
+import cipclient from 'crestron-cip';
 import events from 'events';
 
 /**
@@ -52,61 +52,15 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    */
   discoverDevices(hostname) {
     const eventFeedback = new events.EventEmitter();
-    const client = new net.Socket()
-    var intervalConnect;
-    intervalConnect = false;
 
-    function connect() {
-        client.connect({ port: 6666, host: hostname})
-    }
-
-    function launchIntervalConnect() {
-        if(false != intervalConnect) return
-        intervalConnect = setInterval(connect, 5000)
-    }
-
-    function clearIntervalConnect() {
-        if(false == intervalConnect) return
-        clearInterval(intervalConnect)
-        intervalConnect = false
-    }
-
-    client.on('connect', () => {
-        clearIntervalConnect()
-        console.log('connected to server', 'TCP')
-        client.write('CLIENT connected');
-    })
-
-    client.on('error', (err) => {
-        console.log('TCP ERROR')
-        launchIntervalConnect()
-    })
-    client.on('close', launchIntervalConnect)
-    client.on('end', launchIntervalConnect)
-    client.on('data', (data) => {
-      let parseString = data.toString("utf8")
-      //console.log('INRAW: ' + parseString);
-      let commands = parseString.split('X');
-      commands.pop();
-      commands.forEach((value) => {
-        //console.log("section: " + value);
-        let joinType;
-        switch (value.charAt(0))
-        {
-          case 'D':
-            joinType = "digital";
-          break;
-          case 'A':
-            joinType = "analog";
-          break;
-        }
-        let join = value.substr(1,4);
-        let payloadValue = value.substr(6,5);
-        eventFeedback.emit('update', {joinType: joinType, join: join, payloadValue: payloadValue});
-      });
+    const cip = cipclient.connect({host: hostname, ipid: "\x03"}, () => {
+      this.log.info('CIP connected');
     });
 
-    connect();
+    cip.subscribe((data) => {
+      this.log.info("type:" + data.type + " join:" + data.join + " value:" + data.value);
+      eventFeedback.emit('update', {joinType: data.type, join: data.join, payloadValue: data.value});
+    });
 
     // loop over the discovered devices and register each one if it has not already been registered
     for (const device of this.config.accessories) {
@@ -131,7 +85,7 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
 
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
-        new ExamplePlatformAccessory(this, existingAccessory);
+        new ExamplePlatformAccessory(this, existingAccessory, cip);
 
       } else {
         // the accessory does not yet exist, so we need to create it
@@ -144,11 +98,10 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
         // the `context` property can be used to store any data about the accessory you may need
         accessory.context.device = device;
         accessory.context.eventFeedback = eventFeedback;
-        accessory.context.hostname = hostname;
 
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
-        new ExamplePlatformAccessory(this, accessory);
+        new ExamplePlatformAccessory(this, accessory, cip);
 
         // link the accessory to your platform
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
