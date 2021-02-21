@@ -3,7 +3,7 @@
   "displayName": "Crestron Module",
   "name": "homebridge-navsegda",
   "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
+  "description": "Crestron CIP protocol platform plugin",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
