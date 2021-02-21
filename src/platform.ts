@@ -53,12 +53,12 @@ export class CrestronHomebridgePlatform implements DynamicPlatformPlugin {
   discoverDevices(hostname) {
     const eventFeedback = new events.EventEmitter();
 
-    const cip = cipclient.connect({host: hostname, ipid: "\x03"}, () => {
+    const cip = cipclient.connect({host: hostname, ipid: '\x03'}, () => {
       this.log.info('CIP connected');
     });
 
     cip.subscribe((data) => {
-      this.log.info("type:" + data.type + " join:" + data.join + " value:" + data.value);
+      this.log.info('type:' + data.type + ' join:' + data.join + ' value:' + data.value);
       eventFeedback.emit('update', {joinType: data.type, join: data.join, payloadValue: data.value});
     });
 
