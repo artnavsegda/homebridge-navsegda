@@ -1,11 +1,11 @@
 import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
-import { ExampleHomebridgePlatform } from './platform';
+import { CrestronHomebridgePlatform } from './platform';
 
-export class ExamplePlatformAccessory {
+export class CrestronPlatformAccessory {
   private service: Service;
 
   constructor(
-    private readonly platform: ExampleHomebridgePlatform,
+    private readonly platform: CrestronHomebridgePlatform,
     private readonly accessory: PlatformAccessory,
     private readonly cip,
   ) {
