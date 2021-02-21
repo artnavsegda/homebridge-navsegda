@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExampleHomebridgePlatform = void 0;
+exports.CrestronHomebridgePlatform = void 0;
 const settings_1 = require("./settings");
 const platformAccessory_1 = require("./platformAccessory");
 const crestron_cip_1 = __importDefault(require("crestron-cip"));
@@ -13,7 +13,7 @@ const events_1 = __importDefault(require("events"));
  * This class is the main constructor for your plugin, this is where you should
  * parse the user config and discover/register accessories with Homebridge.
  */
-class ExampleHomebridgePlatform {
+class CrestronHomebridgePlatform {
     constructor(log, config, api) {
         this.log = log;
         this.config = config;
@@ -74,7 +74,7 @@ class ExampleHomebridgePlatform {
                 this.api.updatePlatformAccessories([existingAccessory]);
                 // create the accessory handler for the restored accessory
                 // this is imported from `platformAccessory.ts`
-                new platformAccessory_1.ExamplePlatformAccessory(this, existingAccessory, cip);
+                new platformAccessory_1.CrestronPlatformAccessory(this, existingAccessory, cip);
             }
             else {
                 // the accessory does not yet exist, so we need to create it
@@ -87,7 +87,7 @@ class ExampleHomebridgePlatform {
                 accessory.context.eventFeedback = eventFeedback;
                 // create the accessory handler for the newly create accessory
                 // this is imported from `platformAccessory.ts`
-                new platformAccessory_1.ExamplePlatformAccessory(this, accessory, cip);
+                new platformAccessory_1.CrestronPlatformAccessory(this, accessory, cip);
                 // link the accessory to your platform
                 this.api.registerPlatformAccessories(settings_1.PLUGIN_NAME, settings_1.PLATFORM_NAME, [accessory]);
             }
@@ -96,5 +96,5 @@ class ExampleHomebridgePlatform {
         }
     }
 }
-exports.ExampleHomebridgePlatform = ExampleHomebridgePlatform;
+exports.CrestronHomebridgePlatform = CrestronHomebridgePlatform;
 //# sourceMappingURL=platform.js.map

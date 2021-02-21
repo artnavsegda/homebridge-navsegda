@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExamplePlatformAccessory = void 0;
-class ExamplePlatformAccessory {
+exports.CrestronPlatformAccessory = void 0;
+class CrestronPlatformAccessory {
     constructor(platform, accessory, cip) {
         this.platform = platform;
         this.accessory = accessory;
@@ -89,6 +89,12 @@ class ExamplePlatformAccessory {
                     .on('set', this.handleHoldPositionSet.bind(this));
             }
         }
+        else if (this.accessory.context.device.type == "MotionSensor") {
+            this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
+            this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+            this.service.getCharacteristic(this.Characteristic.MotionDetected)
+                .on('get', this.handleMotionDetectedGet.bind(this));
+        }
         else {
             this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
         }
@@ -136,6 +142,10 @@ class ExamplePlatformAccessory {
                         this.platform.log.info(this.accessory.context.device.displayName + " set PositionState to 2");
                         this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 2);
                     }
+                }
+                else if (payload.join == this.accessory.context.device.getMotionDetected) {
+                    this.platform.log.info(this.accessory.context.device.displayName + " set MotionDetected to " + payload.payloadValue);
+                    this.service.updateCharacteristic(this.platform.Characteristic.MotionDetected, payload.payloadValue);
                 }
             }
             else if (payload.joinType == "analog") {
@@ -341,6 +351,13 @@ class ExamplePlatformAccessory {
                 callback(null, 2);
         });
     }
+    handleMotionDetectedGet(callback) {
+        this.platform.log.debug('Triggered GET MotionDetected');
+        this.digitalRead(this.accessory.context.device.getMotionDetected, (value) => {
+            this.platform.log.debug('Position getMotionDetected ->', value);
+            callback(null, value);
+        });
+    }
 }
-exports.ExamplePlatformAccessory = ExamplePlatformAccessory;
+exports.CrestronPlatformAccessory = CrestronPlatformAccessory;
 //# sourceMappingURL=platformAccessory.js.map

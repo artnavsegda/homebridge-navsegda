@@ -1,11 +1,11 @@
 import { PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
-import { ExampleHomebridgePlatform } from './platform';
-export declare class ExamplePlatformAccessory {
+import { CrestronHomebridgePlatform } from './platform';
+export declare class CrestronPlatformAccessory {
     private readonly platform;
     private readonly accessory;
     private readonly cip;
     private service;
-    constructor(platform: ExampleHomebridgePlatform, accessory: PlatformAccessory, cip: any);
+    constructor(platform: CrestronHomebridgePlatform, accessory: PlatformAccessory, cip: any);
     digitalWrite(join: any): void;
     /**
      * Handle "SET" requests from HomeKit
@@ -82,5 +82,6 @@ export declare class ExamplePlatformAccessory {
      * Handle requests to get the current value of the "Position State" characteristic
      */
     handlePositionStateGet(callback: any): void;
+    handleMotionDetectedGet(callback: any): void;
 }
 //# sourceMappingURL=platformAccessory.d.ts.map

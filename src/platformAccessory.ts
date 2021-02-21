@@ -120,7 +120,7 @@ export class CrestronPlatformAccessory {
     {
       this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
       this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
-      this.service.getCharacteristic(this.Characteristic.MotionDetected)
+      this.service.getCharacteristic(this.platform.Characteristic.MotionDetected)
         .on('get', this.handleMotionDetectedGet.bind(this));
     }
     else
@@ -277,7 +277,7 @@ export class CrestronPlatformAccessory {
 
   analogWrite(join, value)
   {
-    this.cip.aset(join,value);
+    this.cip.aset(join, value);
   }
 
   analogRead(join, returnFn)
