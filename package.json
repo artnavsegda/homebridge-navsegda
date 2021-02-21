@@ -1,6 +1,5 @@
 {
-  "private": true,
-  "displayName": "Crestron Module",
+  "displayName": "Homebridge Crestron Module",
   "name": "homebridge-navsegda",
   "version": "1.0.1",
   "description": "Crestron CIP protocol platform plugin",
