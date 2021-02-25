@@ -49,11 +49,11 @@ class CrestronHomebridgePlatform {
      */
     discoverDevices(hostname) {
         const eventFeedback = new events_1.default.EventEmitter();
-        const cip = crestron_cip_1.default.connect({ host: hostname, ipid: "\x03" }, () => {
+        const cip = crestron_cip_1.default.connect({ host: hostname, ipid: '\x03' }, () => {
             this.log.info('CIP connected');
         });
         cip.subscribe((data) => {
-            this.log.info("type:" + data.type + " join:" + data.join + " value:" + data.value);
+            this.log.info('type:' + data.type + ' join:' + data.join + ' value:' + data.value);
             eventFeedback.emit('update', { joinType: data.type, join: data.join, payloadValue: data.value });
         });
         // loop over the discovered devices and register each one if it has not already been registered
