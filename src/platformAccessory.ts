@@ -155,15 +155,11 @@ export class CrestronPlatformAccessory {
     });
   }
 
-  digitalWrite(join) {
-    this.cip.pulse(join);
-  }
-
   setOn(value: CharacteristicValue, callback: CharacteristicSetCallback) {
     if (value as boolean) {
-      this.digitalWrite(this.accessory.context.device.setOn);
+      this.cip.pulse(this.accessory.context.device.setOn);
     } else {
-      this.digitalWrite(this.accessory.context.device.setOff);
+      this.cip.pulse(this.accessory.context.device.setOff);
     }
 
     this.platform.log.debug('Set Characteristic On ->', value);
@@ -186,16 +182,12 @@ export class CrestronPlatformAccessory {
     });
   }
 
-  analogWrite(join, value) {
-    this.cip.aset(join, value);
-  }
-
   analogRead(join, returnFn) {
     returnFn(this.cip.aget(join));
   }
 
   setBrightness(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-    this.analogWrite(this.accessory.context.device.setBrightness, value);
+    this.cip.aset(this.accessory.context.device.setBrightness, value);
     this.platform.log.debug('Set Characteristic Brightness -> ', value);
 
     // you must call the callback function
@@ -212,7 +204,7 @@ export class CrestronPlatformAccessory {
   }
 
   setHue(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-    this.analogWrite(this.accessory.context.device.setHue, value);
+    this.cip.aset(this.accessory.context.device.setHue, value);
     this.platform.log.debug('Set Characteristic Hue -> ', value);
     callback(null);
   }
@@ -227,7 +219,7 @@ export class CrestronPlatformAccessory {
   }
 
   setSaturation(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-    this.analogWrite(this.accessory.context.device.setSaturation, value);
+    this.cip.aset(this.accessory.context.device.setSaturation, value);
     this.platform.log.debug('Set Characteristic Saturation -> ', value);
     callback(null);
   }
@@ -261,14 +253,14 @@ export class CrestronPlatformAccessory {
 
   handleTargetPositionSet(value, callback) {
     this.platform.log.debug('Triggered SET TargetPosition:' + value);
-    this.analogWrite(this.accessory.context.device.setTargetPosition, value);
+    this.cip.aset(this.accessory.context.device.setTargetPosition, value);
     callback(null);
   }
 
   handleHoldPositionSet(value, callback) {
     this.platform.log.debug('Triggered SET HoldPosition:' + value);
     if (value as boolean) {
-      this.digitalWrite(this.accessory.context.device.setHoldPosition);
+      this.cip.pulse(this.accessory.context.device.setHoldPosition);
     }
     callback(null);
   }
