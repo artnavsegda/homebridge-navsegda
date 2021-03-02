@@ -50,7 +50,7 @@ export class CrestronHomebridgePlatform implements DynamicPlatformPlugin {
    * Accessories must only be registered once, previously created accessories
    * must not be registered again to prevent "duplicate UUID" errors.
    */
-  discoverDevices(hostname) {
+  discoverDevices(hostname: string) {
     const eventFeedback = new events.EventEmitter();
 
     const cip = cipclient.connect({host: hostname, ipid: '\x03'}, () => {
