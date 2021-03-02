@@ -16,9 +16,10 @@ export class CrestronPlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial');
 
+    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+
     if (this.accessory.context.device.type == 'Lightbulb') {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
-      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
       // register handlers for the On/Off Characteristic
       this.service.getCharacteristic(this.platform.Characteristic.On)
         .on('set', this.setOn.bind(this))                // SET - bind to the `setOn` method below
@@ -61,7 +62,6 @@ export class CrestronPlatformAccessory {
       }
     } else if (this.accessory.context.device.type == 'WindowCovering') {
       this.service = this.accessory.getService(this.platform.Service.WindowCovering) || this.accessory.addService(this.platform.Service.WindowCovering);
-      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
 
       // create handlers for required characteristics
       this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition)
@@ -80,11 +80,11 @@ export class CrestronPlatformAccessory {
       }
     } else if (this.accessory.context.device.type == 'MotionSensor') {
       this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
-      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
       this.service.getCharacteristic(this.platform.Characteristic.MotionDetected)
         .on('get', this.handleMotionDetectedGet.bind(this));
     } else if (this.accessory.context.device.type == 'Heater') {
-      //
+      this.service = this.accessory.getService(this.platform.Service.HeaterCooler) || this.accessory.addService(this.platform.Service.HeaterCooler);
+
     } else {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
     }
