@@ -86,18 +86,18 @@ export class CrestronPlatformAccessory {
     } else if (this.accessory.context.device.type == 'Heater') {
       this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
       this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
-      this.service.getCharacteristic(this.Characteristic.Active)
-        .on('get', this.handleActiveGet.bind(this))
-        .on('set', this.handleActiveSet.bind(this));
+      this.service.getCharacteristic(this.platform.Characteristic.Active)
+        .on('get', this.getOn.bind(this))
+        .on('set', this.setActive.bind(this));
 
-      this.service.getCharacteristic(this.Characteristic.CurrentHeaterCoolerState)
+      this.service.getCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState)
         .on('get', this.handleCurrentHeaterCoolerStateGet.bind(this));
 
-      this.service.getCharacteristic(this.Characteristic.TargetHeaterCoolerState)
+      this.service.getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState)
         .on('get', this.handleTargetHeaterCoolerStateGet.bind(this))
         .on('set', this.handleTargetHeaterCoolerStateSet.bind(this));
 
-      this.service.getCharacteristic(this.Characteristic.CurrentTemperature)
+      this.service.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
         .on('get', this.handleCurrentTemperatureGet.bind(this));
     } else {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
@@ -163,6 +163,17 @@ export class CrestronPlatformAccessory {
     }
 
     this.platform.log.debug('Set Characteristic On ->', value);
+    callback(null);
+  }
+
+  setActive(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+    if (value as boolean) {
+      this.cip.pulse(this.accessory.context.device.setOn);
+    } else {
+      this.cip.pulse(this.accessory.context.device.setOff);
+    }
+
+    this.platform.log.debug('Set Boolean Characteristic On ->', value);
     callback(null);
   }
 
