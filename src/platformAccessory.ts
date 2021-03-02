@@ -91,7 +91,7 @@ export class CrestronPlatformAccessory {
         .on('set', this.setActive.bind(this));
 
       this.service.getCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState)
-        .on('get', this.handleCurrentHeaterCoolerStateGet.bind(this));
+        .on('get', this.getStatus.bind(this));
 
       this.service.getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState)
         .on('get', this.handleTargetHeaterCoolerStateGet.bind(this))
@@ -187,6 +187,13 @@ export class CrestronPlatformAccessory {
     });
   }
 
+  getStatus(callback: CharacteristicGetCallback) {
+    this.digitalRead(this.accessory.context.device.getStatus, (value: boolean) => {
+      this.platform.log.debug('Get Characteristic Status ->', value);
+      callback(null, value);
+    });
+  }
+
   analogRead(join, returnFn) {
     returnFn(this.cip.aget(join));
   }
@@ -235,7 +242,7 @@ export class CrestronPlatformAccessory {
     });
   }
 
-  handleCurrentPositionGet(callback) {
+  handleCurrentPositionGet(callback: CharacteristicGetCallback) {
     this.platform.log.debug('Triggered GET CurrentPosition');
     this.analogRead(this.accessory.context.device.getCurrentPosition, (value: number) => {
       this.platform.log.debug('Get Characteristic CurrentPosition ->', value);
@@ -243,7 +250,7 @@ export class CrestronPlatformAccessory {
     });
   }
 
-  handleTargetPositionGet(callback) {
+  handleTargetPositionGet(callback: CharacteristicGetCallback) {
     this.platform.log.debug('Triggered GET TargetPosition');
     this.analogRead(this.accessory.context.device.setTargetPosition, (value: number) => {
       this.platform.log.debug('Get Characteristic TargetPosition ->', value);
@@ -265,7 +272,7 @@ export class CrestronPlatformAccessory {
     callback(null);
   }
 
-  handlePositionStateGet(callback) {
+  handlePositionStateGet(callback: CharacteristicGetCallback) {
     this.platform.log.debug('Triggered GET PositionState');
 
     this.digitalRead(this.accessory.context.device.getGoingMin, (value) => {
