@@ -167,13 +167,8 @@ export class CrestronPlatformAccessory {
   }
 
   setActive(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-    if (value as boolean) {
-      this.cip.pulse(this.accessory.context.device.setOn);
-    } else {
-      this.cip.pulse(this.accessory.context.device.setOff);
-    }
-
-    this.platform.log.debug('Set Boolean Characteristic On ->', value);
+    this.cip.dset(this.accessory.context.device.setActive, value);
+    this.platform.log.debug('Set Characteristic Active ->', value);
     callback(null);
   }
 
