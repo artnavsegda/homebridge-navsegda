@@ -286,13 +286,13 @@ export class CrestronPlatformAccessory {
     });
   }
 
-  handleTargetPositionSet(value: number, callback) {
+  handleTargetPositionSet(value: CharacteristicValue, callback: CharacteristicSetCallback) {
     this.platform.log.debug('Triggered SET TargetPosition:' + value);
     this.cip.aset(this.accessory.context.device.setTargetPosition, value);
     callback(null);
   }
 
-  handleHoldPositionSet(value: CharacteristicValue, callback) {
+  handleHoldPositionSet(value: CharacteristicValue, callback: CharacteristicSetCallback) {
     this.platform.log.debug('Triggered SET HoldPosition:' + value);
     if (value as boolean) {
       this.cip.pulse(this.accessory.context.device.setHoldPosition);
