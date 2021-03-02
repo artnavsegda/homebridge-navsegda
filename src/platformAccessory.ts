@@ -181,10 +181,9 @@ export class CrestronPlatformAccessory {
   }
 
   getOn(callback: CharacteristicGetCallback) {
-    this.digitalRead(this.accessory.context.device.getOn, (value) => {
-      const isOn = value;
-      this.platform.log.debug('Get Characteristic On ->', isOn);
-      callback(null, isOn);
+    this.digitalRead(this.accessory.context.device.getOn, (value: boolean) => {
+      this.platform.log.debug('Get Characteristic On ->', value);
+      callback(null, value);
     });
   }
 
@@ -202,10 +201,9 @@ export class CrestronPlatformAccessory {
 
   getBrightness(callback: CharacteristicGetCallback) {
     this.platform.log.debug('Triggered GET Brightness');
-    this.analogRead(this.accessory.context.device.getBrightness, (value) => {
-      const currentBrightness = value;
-      this.platform.log.debug('Get Characteristic Brightness ->', currentBrightness);
-      callback(null, currentBrightness);
+    this.analogRead(this.accessory.context.device.getBrightness, (value: number) => {
+      this.platform.log.debug('Get Characteristic Brightness ->', value);
+      callback(null, value);
     });
   }
 
@@ -217,10 +215,9 @@ export class CrestronPlatformAccessory {
 
   getHue(callback: CharacteristicGetCallback) {
     this.platform.log.debug('Triggered GET Hue');
-    this.analogRead(this.accessory.context.device.getHue, (value) => {
-      const currentHue = value;
-      this.platform.log.debug('Get Characteristic Hue ->', currentHue);
-      callback(null, currentHue);
+    this.analogRead(this.accessory.context.device.getHue, (value: number) => {
+      this.platform.log.debug('Get Characteristic Hue ->', value);
+      callback(null, value);
     });
   }
 
@@ -232,38 +229,35 @@ export class CrestronPlatformAccessory {
 
   getSaturation(callback: CharacteristicGetCallback) {
     this.platform.log.debug('Triggered GET Saturation');
-    this.analogRead(this.accessory.context.device.getSaturation, (value) => {
-      const currentSaturation = value;
-      this.platform.log.debug('Get Characteristic Saturation ->', currentSaturation);
-      callback(null, currentSaturation);
+    this.analogRead(this.accessory.context.device.getSaturation, (value: number) => {
+      this.platform.log.debug('Get Characteristic Saturation ->', value);
+      callback(null, value);
     });
   }
 
   handleCurrentPositionGet(callback) {
     this.platform.log.debug('Triggered GET CurrentPosition');
-    this.analogRead(this.accessory.context.device.getCurrentPosition, (value) => {
-      const CurrentPosition = value;
-      this.platform.log.debug('Get Characteristic CurrentPosition ->', CurrentPosition);
-      callback(null, CurrentPosition);
+    this.analogRead(this.accessory.context.device.getCurrentPosition, (value: number) => {
+      this.platform.log.debug('Get Characteristic CurrentPosition ->', value);
+      callback(null, value);
     });
   }
 
   handleTargetPositionGet(callback) {
     this.platform.log.debug('Triggered GET TargetPosition');
-    this.analogRead(this.accessory.context.device.setTargetPosition, (value) => {
-      const TargetPosition = value;
-      this.platform.log.debug('Get Characteristic TargetPosition ->', TargetPosition);
-      callback(null, TargetPosition);
+    this.analogRead(this.accessory.context.device.setTargetPosition, (value: number) => {
+      this.platform.log.debug('Get Characteristic TargetPosition ->', value);
+      callback(null, value);
     });
   }
 
-  handleTargetPositionSet(value, callback) {
+  handleTargetPositionSet(value: number, callback) {
     this.platform.log.debug('Triggered SET TargetPosition:' + value);
     this.cip.aset(this.accessory.context.device.setTargetPosition, value);
     callback(null);
   }
 
-  handleHoldPositionSet(value, callback) {
+  handleHoldPositionSet(value: CharacteristicValue, callback) {
     this.platform.log.debug('Triggered SET HoldPosition:' + value);
     if (value as boolean) {
       this.cip.pulse(this.accessory.context.device.setHoldPosition);
