@@ -99,6 +99,11 @@ export class CrestronPlatformAccessory {
 
       this.service.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
         .on('get', this.handleCurrentTemperatureGet.bind(this));
+
+      this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature)
+        .on('get', this.handleSetpointGet.bind(this))
+        .on('set', this.handleSetpointSet.bind(this));
+
     } else {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
     }
@@ -155,6 +160,34 @@ export class CrestronPlatformAccessory {
     });
   }
 
+  handleTargetHeaterCoolerStateGet(callback: CharacteristicGetCallback) {
+    callback(null, 1);
+  }
+
+  handleTargetHeaterCoolerStateSet(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+    callback(null);
+  }
+
+  handleSetpointSet(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+    this.cip.aset(this.accessory.context.device.setSetpoint, value);
+    this.platform.log.debug('Set Characteristic Setpoint -> ', value);
+    callback(null);
+  }
+
+  handleSetpointGet(callback: CharacteristicGetCallback) {
+    this.analogRead(this.accessory.context.device.getSetpoint, (value: number) => {
+      this.platform.log.debug('Get Characteristic Setpoint ->', value);
+      callback(null, value/100);
+    });
+  }
+
+  handleCurrentTemperatureGet(callback: CharacteristicGetCallback) {
+    this.analogRead(this.accessory.context.device.getTemperature, (value: number) => {
+      this.platform.log.debug('Get Characteristic Temperature ->', value);
+      callback(null, value/100);
+    });
+  }
+
   setOn(value: CharacteristicValue, callback: CharacteristicSetCallback) {
     if (value as boolean) {
       this.cip.pulse(this.accessory.context.device.setOn);
@@ -207,7 +240,6 @@ export class CrestronPlatformAccessory {
   }
 
   getBrightness(callback: CharacteristicGetCallback) {
-    this.platform.log.debug('Triggered GET Brightness');
     this.analogRead(this.accessory.context.device.getBrightness, (value: number) => {
       this.platform.log.debug('Get Characteristic Brightness ->', value);
       callback(null, value);
@@ -221,7 +253,6 @@ export class CrestronPlatformAccessory {
   }
 
   getHue(callback: CharacteristicGetCallback) {
-    this.platform.log.debug('Triggered GET Hue');
     this.analogRead(this.accessory.context.device.getHue, (value: number) => {
       this.platform.log.debug('Get Characteristic Hue ->', value);
       callback(null, value);
@@ -235,7 +266,6 @@ export class CrestronPlatformAccessory {
   }
 
   getSaturation(callback: CharacteristicGetCallback) {
-    this.platform.log.debug('Triggered GET Saturation');
     this.analogRead(this.accessory.context.device.getSaturation, (value: number) => {
       this.platform.log.debug('Get Characteristic Saturation ->', value);
       callback(null, value);
@@ -243,7 +273,6 @@ export class CrestronPlatformAccessory {
   }
 
   handleCurrentPositionGet(callback: CharacteristicGetCallback) {
-    this.platform.log.debug('Triggered GET CurrentPosition');
     this.analogRead(this.accessory.context.device.getCurrentPosition, (value: number) => {
       this.platform.log.debug('Get Characteristic CurrentPosition ->', value);
       callback(null, value);
@@ -251,7 +280,6 @@ export class CrestronPlatformAccessory {
   }
 
   handleTargetPositionGet(callback: CharacteristicGetCallback) {
-    this.platform.log.debug('Triggered GET TargetPosition');
     this.analogRead(this.accessory.context.device.setTargetPosition, (value: number) => {
       this.platform.log.debug('Get Characteristic TargetPosition ->', value);
       callback(null, value);
@@ -273,8 +301,6 @@ export class CrestronPlatformAccessory {
   }
 
   handlePositionStateGet(callback: CharacteristicGetCallback) {
-    this.platform.log.debug('Triggered GET PositionState');
-
     this.digitalRead(this.accessory.context.device.getGoingMin, (value) => {
       this.platform.log.debug('Position getGoingMin ->', value);
       if (value) {
@@ -296,8 +322,6 @@ export class CrestronPlatformAccessory {
   }
 
   handleMotionDetectedGet(callback) {
-    this.platform.log.debug('Triggered GET MotionDetected');
-
     this.digitalRead(this.accessory.context.device.getMotionDetected, (value) => {
       this.platform.log.debug('Position getMotionDetected ->', value);
       callback(null, value);
