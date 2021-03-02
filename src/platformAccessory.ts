@@ -84,8 +84,21 @@ export class CrestronPlatformAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.MotionDetected)
         .on('get', this.handleMotionDetectedGet.bind(this));
     } else if (this.accessory.context.device.type == 'Heater') {
-      this.service = this.accessory.getService(this.platform.Service.HeaterCooler) || this.accessory.addService(this.platform.Service.HeaterCooler);
-      
+      this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
+      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+      this.service.getCharacteristic(this.Characteristic.Active)
+        .on('get', this.handleActiveGet.bind(this))
+        .on('set', this.handleActiveSet.bind(this));
+
+      this.service.getCharacteristic(this.Characteristic.CurrentHeaterCoolerState)
+        .on('get', this.handleCurrentHeaterCoolerStateGet.bind(this));
+
+      this.service.getCharacteristic(this.Characteristic.TargetHeaterCoolerState)
+        .on('get', this.handleTargetHeaterCoolerStateGet.bind(this))
+        .on('set', this.handleTargetHeaterCoolerStateSet.bind(this));
+
+      this.service.getCharacteristic(this.Characteristic.CurrentTemperature)
+        .on('get', this.handleCurrentTemperatureGet.bind(this));
     } else {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
     }
