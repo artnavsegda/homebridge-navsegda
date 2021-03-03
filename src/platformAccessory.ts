@@ -223,7 +223,11 @@ export class CrestronPlatformAccessory {
   getStatus(callback: CharacteristicGetCallback) {
     this.digitalRead(this.accessory.context.device.getStatus, (value: boolean) => {
       this.platform.log.debug('Get Characteristic Status ->', value);
-      callback(null, value);
+      if (value) {
+        callback(null, 2);
+      } else {
+        callback(null, 1);
+      }
     });
   }
 
