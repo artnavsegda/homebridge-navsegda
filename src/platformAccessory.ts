@@ -106,6 +106,9 @@ export class CrestronPlatformAccessory {
         .on('get', this.handleSetpointGet.bind(this))
         .on('set', this.handleSetpointSet.bind(this));
 
+      this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature).props.minValue = 18;
+      this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature).props.maxValue = 30;
+
     } else {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
     }
