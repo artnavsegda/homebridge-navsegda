@@ -163,10 +163,10 @@ export class CrestronPlatformAccessory {
           this.service.updateCharacteristic(this.platform.Characteristic.Saturation, payload.payloadValue);
         } else if (payload.join == this.accessory.context.device.getTemperature) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set Temperature to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.CurrentTemperature, payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.CurrentTemperature, payload.payloadValue/100);
         } else if (payload.join == this.accessory.context.device.getSetpoint) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set HeatingThresholdTemperature to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.Saturation, payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature, payload.payloadValue/100);
         }
       }
     });
