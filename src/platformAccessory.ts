@@ -97,6 +97,8 @@ export class CrestronPlatformAccessory {
         .on('get', this.handleTargetHeaterCoolerStateGet.bind(this))
         .on('set', this.handleTargetHeaterCoolerStateSet.bind(this));
 
+      this.service.getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState).props.validValues = [1];
+
       this.service.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
         .on('get', this.handleCurrentTemperatureGet.bind(this));
 
@@ -181,7 +183,7 @@ export class CrestronPlatformAccessory {
   }
 
   handleSetpointSet(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-    this.cip.aset(this.accessory.context.device.setSetpoint, value);
+    this.cip.aset(this.accessory.context.device.setSetpoint, value as number * 100);
     this.platform.log.debug('Set Characteristic Setpoint -> ', value);
     callback(null);
   }
