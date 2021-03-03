@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge Crestron Module",
   "name": "homebridge-navsegda",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Crestron CIP protocol platform plugin",
   "license": "Apache-2.0",
   "repository": {
