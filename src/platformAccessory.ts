@@ -16,7 +16,7 @@ export class CrestronPlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial');
 
-    if (this.accessory.context.device.type == 'Lightbulb') {
+    if (this.accessory.context.device.type === 'Lightbulb') {
       this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
       this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
       // register handlers for the On/Off Characteristic
@@ -59,7 +59,7 @@ export class CrestronPlatformAccessory {
           this.platform.log.debug(this.accessory.context.device.displayName + ' getSaturation join ' + this.accessory.context.device.getSaturation);
         }
       }
-    } else if (this.accessory.context.device.type == 'WindowCovering') {
+    } else if (this.accessory.context.device.type === 'WindowCovering') {
       this.service = this.accessory.getService(this.platform.Service.WindowCovering) || this.accessory.addService(this.platform.Service.WindowCovering);
       this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
 
@@ -78,12 +78,12 @@ export class CrestronPlatformAccessory {
         this.service.getCharacteristic(this.platform.Characteristic.HoldPosition)
           .on('set', this.handleHoldPositionSet.bind(this));
       }
-    } else if (this.accessory.context.device.type == 'MotionSensor') {
+    } else if (this.accessory.context.device.type === 'MotionSensor') {
       this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
       this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
       this.service.getCharacteristic(this.platform.Characteristic.MotionDetected)
         .on('get', this.handleMotionDetectedGet.bind(this));
-    } else if (this.accessory.context.device.type == 'Heater') {
+    } else if (this.accessory.context.device.type === 'Heater') {
       this.service = this.accessory.getService(this.platform.Service.HeaterCooler) || this.accessory.addService(this.platform.Service.HeaterCooler);
       this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
       this.service.getCharacteristic(this.platform.Characteristic.Active)
@@ -115,58 +115,58 @@ export class CrestronPlatformAccessory {
       //this.platform.log.info(this.accessory.context.device.displayName + ' payload join ' +  payload.join);
       //this.platform.log.info(this.accessory.context.device.displayName + ' payload value ' +  payload.payloadValue);
 
-      if (payload.joinType == 'digital') {
-        if (payload.join == this.accessory.context.device.getOn) {
+      if (payload.joinType === 'digital') {
+        if (payload.join === this.accessory.context.device.getOn) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set value to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.On, payload.payloadValue);
-        } else if (payload.join == this.accessory.context.device.getGoingMin) {
+        } else if (payload.join === this.accessory.context.device.getGoingMin) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set GoingMin to ' + payload.payloadValue);
-          if (payload.payloadValue == 1) {
+          if (payload.payloadValue === 1) {
             this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 0');
             this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 0);
           }
-        } else if (payload.join == this.accessory.context.device.getGoingMax) {
+        } else if (payload.join === this.accessory.context.device.getGoingMax) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set GoingMax to ' + payload.payloadValue);
-          if (payload.payloadValue == 1) {
+          if (payload.payloadValue === 1) {
             this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 1');
             this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 1);
           }
-        } else if (payload.join == this.accessory.context.device.getStopped) {
+        } else if (payload.join === this.accessory.context.device.getStopped) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set Stopped to ' + payload.payloadValue);
-          if (payload.payloadValue == 1) {
+          if (payload.payloadValue === 1) {
             this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 2');
             this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 2);
           }
-        } else if (payload.join == this.accessory.context.device.getMotionDetected) {
+        } else if (payload.join === this.accessory.context.device.getMotionDetected) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set MotionDetected to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.MotionDetected, payload.payloadValue);
-        } else if (payload.join == this.accessory.context.device.getActive) {
+        } else if (payload.join === this.accessory.context.device.getActive) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set Active to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.Active, payload.payloadValue);
-        } else if (payload.join == this.accessory.context.device.getStatus) {
+        } else if (payload.join === this.accessory.context.device.getStatus) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set Status to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState, payload.payloadValue + 1);
         }
-      } else if (payload.joinType == 'analog') {
-        if (payload.join == this.accessory.context.device.getBrightness) {
+      } else if (payload.joinType === 'analog') {
+        if (payload.join === this.accessory.context.device.getBrightness) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set brightness to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
-        } else if (payload.join == this.accessory.context.device.getCurrentPosition) {
+        } else if (payload.join === this.accessory.context.device.getCurrentPosition) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set CurrentPosition to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.CurrentPosition, payload.payloadValue);
-        } else if (payload.join == this.accessory.context.device.getTargetPosition) {
+        } else if (payload.join === this.accessory.context.device.getTargetPosition) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set TargetPosition to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.TargetPosition, payload.payloadValue);
-        } else if (payload.join == this.accessory.context.device.getHue) {
+        } else if (payload.join === this.accessory.context.device.getHue) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set Hue to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.Hue, payload.payloadValue);
-        } else if (payload.join == this.accessory.context.device.getSaturation) {
+        } else if (payload.join === this.accessory.context.device.getSaturation) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set Saturation to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.Saturation, payload.payloadValue);
-        } else if (payload.join == this.accessory.context.device.getTemperature) {
+        } else if (payload.join === this.accessory.context.device.getTemperature) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set Temperature to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.CurrentTemperature, payload.payloadValue/100);
-        } else if (payload.join == this.accessory.context.device.getSetpoint) {
+        } else if (payload.join === this.accessory.context.device.getSetpoint) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set HeatingThresholdTemperature to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature, payload.payloadValue/100);
         }
@@ -220,7 +220,7 @@ export class CrestronPlatformAccessory {
   }
 
   digitalRead(join, returnFn) {
-    if (this.cip.dget(join) == 1) {
+    if (this.cip.dget(join) === 1) {
       returnFn(true);
     } else {
       returnFn(false);
