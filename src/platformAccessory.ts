@@ -84,10 +84,10 @@ export class CrestronPlatformAccessory {
       this.service.getCharacteristic(this.platform.Characteristic.MotionDetected)
         .on('get', this.handleMotionDetectedGet.bind(this));
     } else if (this.accessory.context.device.type == 'Heater') {
-      this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
+      this.service = this.accessory.getService(this.platform.Service.HeaterCooler) || this.accessory.addService(this.platform.Service.HeaterCooler);
       this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
       this.service.getCharacteristic(this.platform.Characteristic.Active)
-        .on('get', this.getOn.bind(this))
+        .on('get', this.getActive.bind(this))
         .on('set', this.setActive.bind(this));
 
       this.service.getCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState)
@@ -138,6 +138,12 @@ export class CrestronPlatformAccessory {
         } else if (payload.join == this.accessory.context.device.getMotionDetected) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set MotionDetected to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.MotionDetected, payload.payloadValue);
+        } else if (payload.join == this.accessory.context.device.getActive) {
+          this.platform.log.info(this.accessory.context.device.displayName + ' set Active to ' + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.Active, payload.payloadValue);
+        } else if (payload.join == this.accessory.context.device.getStatus) {
+          this.platform.log.info(this.accessory.context.device.displayName + ' set Status to ' + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState, payload.payloadValue + 1);
         }
       } else if (payload.joinType == 'analog') {
         if (payload.join == this.accessory.context.device.getBrightness) {
@@ -154,6 +160,12 @@ export class CrestronPlatformAccessory {
           this.service.updateCharacteristic(this.platform.Characteristic.Hue, payload.payloadValue);
         } else if (payload.join == this.accessory.context.device.getSaturation) {
           this.platform.log.info(this.accessory.context.device.displayName + ' set Saturation to ' + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.Saturation, payload.payloadValue);
+        } else if (payload.join == this.accessory.context.device.getTemperature) {
+          this.platform.log.info(this.accessory.context.device.displayName + ' set Temperature to ' + payload.payloadValue);
+          this.service.updateCharacteristic(this.platform.Characteristic.CurrentTemperature, payload.payloadValue);
+        } else if (payload.join == this.accessory.context.device.getSetpoint) {
+          this.platform.log.info(this.accessory.context.device.displayName + ' set HeatingThresholdTemperature to ' + payload.payloadValue);
           this.service.updateCharacteristic(this.platform.Characteristic.Saturation, payload.payloadValue);
         }
       }
@@ -215,6 +227,13 @@ export class CrestronPlatformAccessory {
 
   getOn(callback: CharacteristicGetCallback) {
     this.digitalRead(this.accessory.context.device.getOn, (value: boolean) => {
+      this.platform.log.debug('Get Characteristic On ->', value);
+      callback(null, value);
+    });
+  }
+
+  getActive(callback: CharacteristicGetCallback) {
+    this.digitalRead(this.accessory.context.device.getActive, (value: boolean) => {
       this.platform.log.debug('Get Characteristic On ->', value);
       callback(null, value);
     });
