@@ -329,24 +329,19 @@ export class CrestronPlatformAccessory {
   }
 
   handlePositionStateGet(callback: CharacteristicGetCallback) {
-    this.digitalRead(this.accessory.context.device.getGoingMin, (value) => {
-      this.platform.log.debug('Position getGoingMin ->', value);
-      if (value) {
-        callback(null, 0);
-      }
-    });
-    this.digitalRead(this.accessory.context.device.getGoingMax, (value) => {
-      this.platform.log.debug('Position getGoingMax ->', value);
-      if (value) {
-        callback(null, 1);
-      }
-    });
-    this.digitalRead(this.accessory.context.device.getStopped, (value) => {
-      this.platform.log.debug('Position getStopped ->', value);
-      if (value) {
-        callback(null, 2);
-      }
-    });
+    if (this.cip.dget(this.accessory.context.device.getGoingMin) === 1) {
+      this.platform.log.debug('PositionState ->', 0);
+      callback(null, 0);
+    } else if (this.cip.dget(this.accessory.context.device.getGoingMax) === 1) {
+      this.platform.log.debug('PositionState ->', 1);
+      callback(null, 1);
+    } else if (this.cip.dget(this.accessory.context.device.getStopped) === 1) {
+      this.platform.log.debug('PositionState ->', 2);
+      callback(null, 2);
+    } else {
+      this.platform.log.debug('PositionState ->', 2);
+      callback(null, 2);
+    }
   }
 
   handleMotionDetectedGet(callback) {
