@@ -194,7 +194,11 @@ export class CrestronPlatformAccessory {
   handleSetpointGet(callback: CharacteristicGetCallback) {
     this.analogRead(this.accessory.context.device.getSetpoint, (value: number) => {
       this.platform.log.debug('Get Characteristic Setpoint ->', value);
-      callback(null, value/100);
+      if (value/100 < 18) {
+        callback(null, 18);
+      } else {
+        callback(null, value/100);
+      }
     });
   }
 
