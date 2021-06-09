@@ -139,36 +139,44 @@ export class CrestronPlatformAccessory {
       //this.platform.log.info(this.accessory.context.device.displayName + ' payload value ' +  payload.payloadValue);
 
       if (payload.joinType === 'digital') {
-        if (payload.join === this.accessory.context.device.getOn) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set value to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.On, payload.payloadValue);
-        } else if (payload.join === this.accessory.context.device.getGoingMin) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set GoingMin to ' + payload.payloadValue);
-          if (payload.payloadValue === 1) {
-            this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 0');
-            this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 0);
-          }
-        } else if (payload.join === this.accessory.context.device.getGoingMax) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set GoingMax to ' + payload.payloadValue);
-          if (payload.payloadValue === 1) {
-            this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 1');
-            this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 1);
-          }
-        } else if (payload.join === this.accessory.context.device.getStopped) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set Stopped to ' + payload.payloadValue);
-          if (payload.payloadValue === 1) {
-            this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 2');
-            this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 2);
-          }
-        } else if (payload.join === this.accessory.context.device.getMotionDetected) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set MotionDetected to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.MotionDetected, payload.payloadValue);
-        } else if (payload.join === this.accessory.context.device.getActive) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set Active to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.Active, payload.payloadValue);
-        } else if (payload.join === this.accessory.context.device.getStatus) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set Status to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState, payload.payloadValue + 1);
+        switch (payload.join) {
+          case this.accessory.context.device.getOn:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set value to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.On, payload.payloadValue);
+            break;
+          case this.accessory.context.device.getGoingMin:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set GoingMin to ' + payload.payloadValue);
+            if (payload.payloadValue === 1) {
+              this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 0');
+              this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 0);
+            }
+            break;
+          case this.accessory.context.device.getGoingMax:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set GoingMax to ' + payload.payloadValue);
+            if (payload.payloadValue === 1) {
+              this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 1');
+              this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 1);
+            }
+            break;
+          case this.accessory.context.device.getStopped:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set Stopped to ' + payload.payloadValue);
+            if (payload.payloadValue === 1) {
+              this.platform.log.info(this.accessory.context.device.displayName + ' set PositionState to 2');
+              this.service.updateCharacteristic(this.platform.Characteristic.PositionState, 2);
+            }
+            break;
+          case this.accessory.context.device.getMotionDetected:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set MotionDetected to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.MotionDetected, payload.payloadValue);
+            break;
+          case this.accessory.context.device.getActive:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set Active to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.Active, payload.payloadValue);
+            break;
+          case this.accessory.context.device.getStatus:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set Status to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState, payload.payloadValue + 1);
+            break;
         }
       } else if (payload.joinType === 'analog') {
         if (payload.join === this.accessory.context.device.getBrightness) {
