@@ -116,6 +116,17 @@ export class CrestronPlatformAccessory {
       case 'Fan':
         this.service = this.accessory.getService(this.platform.Service.Fanv2) || this.accessory.addService(this.platform.Service.Fanv2);
         this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+        this.service.getCharacteristic(this.platform.Characteristic.Active)
+          .on('get', this.getActive.bind(this))
+          .on('set', this.setActive.bind(this));
+
+        this.service.getCharacteristic(this.platform.Characteristic.CurrentFanState)
+          .on('get', this.getStatus.bind(this));
+
+        this.service.getCharacteristic(this.platform.Characteristic.RotationSpeed)
+          .on('get', this.getSpeed.bind(this))
+          .on('set', this.setSpeed.bind(this));
+          
         break;
       default:
         this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
