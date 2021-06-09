@@ -208,6 +208,9 @@ export class CrestronPlatformAccessory {
             this.platform.log.info(this.accessory.context.device.displayName + ' set HeatingThresholdTemperature to ' + payload.payloadValue);
             this.service.updateCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature, payload.payloadValue/100);
             break;
+          case this.accessory.context.device.getSpeed:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set RotationSpeed to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.RotationSpeed, payload.payloadValue);
         }
       }
     });
