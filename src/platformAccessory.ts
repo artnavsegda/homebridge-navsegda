@@ -16,101 +16,105 @@ export class CrestronPlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial');
 
-    if (this.accessory.context.device.type === 'Lightbulb') {
-      this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
-      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
-      // register handlers for the On/Off Characteristic
-      this.service.getCharacteristic(this.platform.Characteristic.On)
-        .on('set', this.setOn.bind(this))                // SET - bind to the `setOn` method below
-        .on('get', this.getOn.bind(this));               // GET - bind to the `getOn` method below
-      this.platform.log.debug(this.accessory.context.device.displayName + ' setOn join ' + this.accessory.context.device.setOn);
-      this.platform.log.debug(this.accessory.context.device.displayName + ' getOn join ' + this.accessory.context.device.getOn);
-      this.platform.log.debug(this.accessory.context.device.displayName + ' setOff join ' + this.accessory.context.device.setOff);
-      if (this.accessory.context.device.setBrightness) {
-        // register handlers for the Brightness Characteristic
-        this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-          .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
-        this.platform.log.debug(this.accessory.context.device.displayName + ' setBrightness join ' + this.accessory.context.device.setBrightness);
-        if (this.accessory.context.device.getBrightness) {
+    switch (this.accessory.context.device.type) {
+      case 'Lightbulb':
+        this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
+        this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+        // register handlers for the On/Off Characteristic
+        this.service.getCharacteristic(this.platform.Characteristic.On)
+          .on('set', this.setOn.bind(this))                // SET - bind to the `setOn` method below
+          .on('get', this.getOn.bind(this));               // GET - bind to the `getOn` method below
+        this.platform.log.debug(this.accessory.context.device.displayName + ' setOn join ' + this.accessory.context.device.setOn);
+        this.platform.log.debug(this.accessory.context.device.displayName + ' getOn join ' + this.accessory.context.device.getOn);
+        this.platform.log.debug(this.accessory.context.device.displayName + ' setOff join ' + this.accessory.context.device.setOff);
+        if (this.accessory.context.device.setBrightness) {
+          // register handlers for the Brightness Characteristic
           this.service.getCharacteristic(this.platform.Characteristic.Brightness)
-            .on('get', this.getBrightness.bind(this));       // GET - bind to the 'getBrightness` method below
-          this.platform.log.debug(this.accessory.context.device.displayName + ' getBrightness join ' + this.accessory.context.device.setBrightness);
+            .on('set', this.setBrightness.bind(this));       // SET - bind to the 'setBrightness` method below
+          this.platform.log.debug(this.accessory.context.device.displayName + ' setBrightness join ' + this.accessory.context.device.setBrightness);
+          if (this.accessory.context.device.getBrightness) {
+            this.service.getCharacteristic(this.platform.Characteristic.Brightness)
+              .on('get', this.getBrightness.bind(this));       // GET - bind to the 'getBrightness` method below
+            this.platform.log.debug(this.accessory.context.device.displayName + ' getBrightness join ' + this.accessory.context.device.setBrightness);
+          }
         }
-      }
-      if (this.accessory.context.device.setHue) {
-        // register handlers for the Hue Characteristic
-        this.service.getCharacteristic(this.platform.Characteristic.Hue)
-          .on('set', this.setHue.bind(this));       // SET - bind to the 'setHue` method below
-        this.platform.log.debug(this.accessory.context.device.displayName + ' setHue join ' + this.accessory.context.device.setHue);
-        if (this.accessory.context.device.getHue) {
+        if (this.accessory.context.device.setHue) {
+          // register handlers for the Hue Characteristic
           this.service.getCharacteristic(this.platform.Characteristic.Hue)
-            .on('get', this.getHue.bind(this));       // GET - bind to the 'getHue` method below
-          this.platform.log.debug(this.accessory.context.device.displayName + ' getHue join ' + this.accessory.context.device.getHue);
+            .on('set', this.setHue.bind(this));       // SET - bind to the 'setHue` method below
+          this.platform.log.debug(this.accessory.context.device.displayName + ' setHue join ' + this.accessory.context.device.setHue);
+          if (this.accessory.context.device.getHue) {
+            this.service.getCharacteristic(this.platform.Characteristic.Hue)
+              .on('get', this.getHue.bind(this));       // GET - bind to the 'getHue` method below
+            this.platform.log.debug(this.accessory.context.device.displayName + ' getHue join ' + this.accessory.context.device.getHue);
+          }
         }
-      }
-      if (this.accessory.context.device.setSaturation) {
-        // register handlers for the Saturation Characteristic
-        this.service.getCharacteristic(this.platform.Characteristic.Saturation)
-          .on('set', this.setSaturation.bind(this));       // SET - bind to the 'setSaturation` method below
-        this.platform.log.debug(this.accessory.context.device.displayName + ' setSaturation join ' + this.accessory.context.device.setSaturation);
-        if (this.accessory.context.device.getSaturation) {
+        if (this.accessory.context.device.setSaturation) {
+          // register handlers for the Saturation Characteristic
           this.service.getCharacteristic(this.platform.Characteristic.Saturation)
-            .on('get', this.getSaturation.bind(this));       // GET - bind to the 'getSaturation` method below
-          this.platform.log.debug(this.accessory.context.device.displayName + ' getSaturation join ' + this.accessory.context.device.getSaturation);
+            .on('set', this.setSaturation.bind(this));       // SET - bind to the 'setSaturation` method below
+          this.platform.log.debug(this.accessory.context.device.displayName + ' setSaturation join ' + this.accessory.context.device.setSaturation);
+          if (this.accessory.context.device.getSaturation) {
+            this.service.getCharacteristic(this.platform.Characteristic.Saturation)
+              .on('get', this.getSaturation.bind(this));       // GET - bind to the 'getSaturation` method below
+            this.platform.log.debug(this.accessory.context.device.displayName + ' getSaturation join ' + this.accessory.context.device.getSaturation);
+          }
         }
-      }
-    } else if (this.accessory.context.device.type === 'WindowCovering') {
-      this.service = this.accessory.getService(this.platform.Service.WindowCovering) || this.accessory.addService(this.platform.Service.WindowCovering);
-      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+        break;
+      case 'WindowCovering':
+        this.service = this.accessory.getService(this.platform.Service.WindowCovering) || this.accessory.addService(this.platform.Service.WindowCovering);
+        this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
 
-      // create handlers for required characteristics
-      this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition)
-        .on('get', this.handleCurrentPositionGet.bind(this));
+        // create handlers for required characteristics
+        this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition)
+          .on('get', this.handleCurrentPositionGet.bind(this));
 
-      this.service.getCharacteristic(this.platform.Characteristic.TargetPosition)
-        .on('get', this.handleTargetPositionGet.bind(this))
-        .on('set', this.handleTargetPositionSet.bind(this));
+        this.service.getCharacteristic(this.platform.Characteristic.TargetPosition)
+          .on('get', this.handleTargetPositionGet.bind(this))
+          .on('set', this.handleTargetPositionSet.bind(this));
 
-      this.service.getCharacteristic(this.platform.Characteristic.PositionState)
-        .on('get', this.handlePositionStateGet.bind(this));
+        this.service.getCharacteristic(this.platform.Characteristic.PositionState)
+          .on('get', this.handlePositionStateGet.bind(this));
 
-      if (this.accessory.context.device.setHoldPosition) {
-        this.service.getCharacteristic(this.platform.Characteristic.HoldPosition)
-          .on('set', this.handleHoldPositionSet.bind(this));
-      }
-    } else if (this.accessory.context.device.type === 'MotionSensor') {
-      this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
-      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
-      this.service.getCharacteristic(this.platform.Characteristic.MotionDetected)
-        .on('get', this.handleMotionDetectedGet.bind(this));
-    } else if (this.accessory.context.device.type === 'Heater') {
-      this.service = this.accessory.getService(this.platform.Service.HeaterCooler) || this.accessory.addService(this.platform.Service.HeaterCooler);
-      this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
-      this.service.getCharacteristic(this.platform.Characteristic.Active)
-        .on('get', this.getActive.bind(this))
-        .on('set', this.setActive.bind(this));
+        if (this.accessory.context.device.setHoldPosition) {
+          this.service.getCharacteristic(this.platform.Characteristic.HoldPosition)
+            .on('set', this.handleHoldPositionSet.bind(this));
+        }
+        break;
+      case 'MotionSensor':
+        this.service = this.accessory.getService(this.platform.Service.MotionSensor) || this.accessory.addService(this.platform.Service.MotionSensor);
+        this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+        this.service.getCharacteristic(this.platform.Characteristic.MotionDetected)
+          .on('get', this.handleMotionDetectedGet.bind(this));
+        break;
+      case 'Heater':
+        this.service = this.accessory.getService(this.platform.Service.HeaterCooler) || this.accessory.addService(this.platform.Service.HeaterCooler);
+        this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+        this.service.getCharacteristic(this.platform.Characteristic.Active)
+          .on('get', this.getActive.bind(this))
+          .on('set', this.setActive.bind(this));
 
-      this.service.getCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState)
-        .on('get', this.getStatus.bind(this));
+        this.service.getCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState)
+          .on('get', this.getStatus.bind(this));
 
-      this.service.getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState)
-        .on('get', this.handleTargetHeaterCoolerStateGet.bind(this))
-        .on('set', this.handleTargetHeaterCoolerStateSet.bind(this));
+        this.service.getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState)
+          .on('get', this.handleTargetHeaterCoolerStateGet.bind(this))
+          .on('set', this.handleTargetHeaterCoolerStateSet.bind(this));
 
-      this.service.getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState).props.validValues = [1];
+        this.service.getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState).props.validValues = [1];
 
-      this.service.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
-        .on('get', this.handleCurrentTemperatureGet.bind(this));
+        this.service.getCharacteristic(this.platform.Characteristic.CurrentTemperature)
+          .on('get', this.handleCurrentTemperatureGet.bind(this));
 
-      this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature)
-        .on('get', this.handleSetpointGet.bind(this))
-        .on('set', this.handleSetpointSet.bind(this));
+        this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature)
+          .on('get', this.handleSetpointGet.bind(this))
+          .on('set', this.handleSetpointSet.bind(this));
 
-      this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature).props.minValue = 18;
-      this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature).props.maxValue = 30;
-
-    } else {
-      this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
+        this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature).props.minValue = 18;
+        this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature).props.maxValue = 30;
+        break;
+      default:
+        this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
     }
 
     this.accessory.context.eventFeedback.on('update', (payload) => {
