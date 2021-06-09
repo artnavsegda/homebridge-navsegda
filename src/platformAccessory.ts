@@ -113,8 +113,13 @@ export class CrestronPlatformAccessory {
         this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature).props.minValue = 18;
         this.service.getCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature).props.maxValue = 30;
         break;
+      case 'Fan':
+        this.service = this.accessory.getService(this.platform.Service.Fanv2) || this.accessory.addService(this.platform.Service.Fanv2);
+        this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+        break;
       default:
         this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
+        this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
     }
 
     this.accessory.context.eventFeedback.on('update', (payload) => {
