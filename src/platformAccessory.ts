@@ -179,27 +179,35 @@ export class CrestronPlatformAccessory {
             break;
         }
       } else if (payload.joinType === 'analog') {
-        if (payload.join === this.accessory.context.device.getBrightness) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set brightness to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
-        } else if (payload.join === this.accessory.context.device.getCurrentPosition) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set CurrentPosition to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.CurrentPosition, payload.payloadValue);
-        } else if (payload.join === this.accessory.context.device.getTargetPosition) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set TargetPosition to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.TargetPosition, payload.payloadValue);
-        } else if (payload.join === this.accessory.context.device.getHue) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set Hue to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.Hue, payload.payloadValue);
-        } else if (payload.join === this.accessory.context.device.getSaturation) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set Saturation to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.Saturation, payload.payloadValue);
-        } else if (payload.join === this.accessory.context.device.getTemperature) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set Temperature to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.CurrentTemperature, payload.payloadValue/100);
-        } else if (payload.join === this.accessory.context.device.getSetpoint) {
-          this.platform.log.info(this.accessory.context.device.displayName + ' set HeatingThresholdTemperature to ' + payload.payloadValue);
-          this.service.updateCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature, payload.payloadValue/100);
+        switch (payload.join) {
+          case this.accessory.context.device.getBrightness:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set brightness to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.Brightness, payload.payloadValue);
+            break;
+          case this.accessory.context.device.getCurrentPosition:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set CurrentPosition to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.CurrentPosition, payload.payloadValue);
+            break;
+          case this.accessory.context.device.getTargetPosition:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set TargetPosition to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.TargetPosition, payload.payloadValue);
+            break;
+          case this.accessory.context.device.getHue:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set Hue to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.Hue, payload.payloadValue);
+            break;
+          case this.accessory.context.device.getSaturation:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set Saturation to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.Saturation, payload.payloadValue);
+            break;
+          case this.accessory.context.device.getTemperature:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set Temperature to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.CurrentTemperature, payload.payloadValue/100);
+            break;
+          case this.accessory.context.device.getSetpoint:
+            this.platform.log.info(this.accessory.context.device.displayName + ' set HeatingThresholdTemperature to ' + payload.payloadValue);
+            this.service.updateCharacteristic(this.platform.Characteristic.HeatingThresholdTemperature, payload.payloadValue/100);
+            break;
         }
       }
     });
