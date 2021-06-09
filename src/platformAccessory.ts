@@ -126,7 +126,7 @@ export class CrestronPlatformAccessory {
         this.service.getCharacteristic(this.platform.Characteristic.RotationSpeed)
           .on('get', this.getSpeed.bind(this))
           .on('set', this.setSpeed.bind(this));
-          
+
         break;
       default:
         this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
@@ -320,6 +320,19 @@ export class CrestronPlatformAccessory {
   getSaturation(callback: CharacteristicGetCallback) {
     this.analogRead(this.accessory.context.device.getSaturation, (value: number) => {
       this.platform.log.debug('Get Characteristic Saturation ->', value);
+      callback(null, value);
+    });
+  }
+
+  setSpeed(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+    this.cip.aset(this.accessory.context.device.setSpeed, value);
+    this.platform.log.debug('Set Characteristic Speed -> ', value);
+    callback(null);
+  }
+
+  getSpeed(callback: CharacteristicGetCallback) {
+    this.analogRead(this.accessory.context.device.getSpeed, (value: number) => {
+      this.platform.log.debug('Get Characteristic Speed ->', value);
       callback(null, value);
     });
   }
