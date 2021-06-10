@@ -260,6 +260,7 @@ export class CrestronPlatformAccessory {
   }
 
   setActive(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+    this.cip.dset(this.accessory.context.device.setActive, !value);
     this.cip.dset(this.accessory.context.device.setActive, value);
     this.platform.log.debug('Set Characteristic Active ->', value);
     callback(null);
